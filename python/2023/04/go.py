@@ -1,6 +1,7 @@
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'util'))
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                             'util'))
 
 import walk
 import file
@@ -14,15 +15,18 @@ class Card:
         given = set(int(g) for g in given.split())
         self.matches = len(winning & given)
         self.count = 1
-    def score1(self):
+
+    def points(self):
         return 0 if self.matches == 0 else (1 << self.matches-1)
 
 def go(filename):
     print(f"results from {filename}:")
     lines = file.lines(filename)
     cards = {c.id: c for l in lines if (c := Card(l))}
-    points = sum(c.score1() for c in cards.values())
-    print(f"Points (part 1): {points}")
+    point_total = sum(c.points() for c in cards.values())
+    print(f"Points (part 1): {point_total}")
+
+    # Do part 2 mechanically because that's more than fast enough
     for n in range(1,len(cards)+1):
         c = cards[n]
         for i in range(c.matches):
