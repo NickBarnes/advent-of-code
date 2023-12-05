@@ -18,15 +18,15 @@ class Map:
         assert(d2 == 'map:')
         self.source,t,self.dest = d1.split('-')
         assert(t == 'to')
-        ranges = [[int(x) for x in l.split()] for l in lines[1:]]
         # convert to intervals
-        self.ranges = [(Interval(s_start, s_start + length),
-                        d_start-s_start)
-                       for (d_start, s_start, length) in ranges]
+        self.ranges = [(Interval(l[1], l[1] + l[2]),
+                        l[0]-l[1])
+                       for line in lines[1:]
+                       if (l := [int(x) for x in line.split()])]
 
     def apply(self, v):
-        for (s_int, delta) in self.ranges:
-            if v in s_int:
+        for (src, delta) in self.ranges:
+            if v in src:
                 return v + delta
         return v
 
@@ -34,60 +34,45 @@ class Map:
     def apply_intervals(self, inter):
         hits = []
         ints = inter.ints
-        for (s, delta) in self.ranges:
+        for (src, delta) in self.ranges:
             misses = []
             for i in ints:
-                hit = i & s
+                hit = i & src
                 if hit: hits.append(hit.offset(delta))
-                misses += list(i - s)
+                misses += list(i - src)
             ints = misses
         return Intervals([(x.base, x.limit) for l in (hits, ints) for x in l])
 
-# Seed numbers for part 1
-def part1seeds(s):
-    assert(len(s) == 1)
-    seeds = s[0].split()
-    assert(seeds[0] == 'seeds:')
-    return [int(x) for x in seeds[1:]]
-
 # Seed intervals for part 2
-def part2seeds(s):
-    assert(len(s) == 1)
-    seed_pairs = s[0].split()
-    assert(seed_pairs[0] == 'seeds:')
-    intervals = []
-    for i in range(len(seed_pairs)//2):
-        base = int(seed_pairs[i*2+1])
-        length = int(seed_pairs[i*2+2])
-        intervals.append((base, base+length))
-    # combine and normalise
-    return Intervals(intervals)
+def seed_intervals(seeds):
+    return Intervals([(int(base), int(base)+int(length))
+                      for base, length in
+                      zip(seeds[::2],seeds[1::2])])
 
-def min_location(seeds, maps):
-    min_loc = None
-    min_seed = None
-    for s in seeds:
-        v = s
-        for map in maps:
-            v = map.apply(v)
-        if min_loc is None or v < min_loc:
-            min_loc = v
-            min_seed = s
-    return min_loc
+# Minimum location for part 1
+def min_location_1(seeds, maps):
+    return min(functools.reduce(lambda v,m: m.apply(v), maps, s)
+               for s in seeds)
 
-def min_location_inters(inters, maps):
-    for m in maps:
-        inters = m.apply_intervals(inters)
-    return inters.ints[0].base
+# Minimum location for part 2 (interval arithmetic)
+def min_location_2(seeds, maps):
+    return (functools.reduce(lambda i,m: m.apply_intervals(i), maps, seeds)
+            .ints[0].base)
 
 def go(filename):
     print(f"results from {filename}:")
     sections = file.sections(filename)
+    seeds = sections[0]
+    assert(len(seeds) == 1)
+    seeds = seeds[0].split()
+    assert(seeds[0] == 'seeds:')
+    seeds = seeds[1:]
+
     maps = [Map(s) for s in sections[1:]]
     print("Part 1: minimum location "
-          f"{min_location(part1seeds(sections[0]), maps)}")
+          f"{min_location_1([int(x) for x in seeds], maps)}")
     print("Part 2: minimum location "
-          f"{min_location_inters(part2seeds(sections[0]),maps)}")
+          f"{min_location_2(seed_intervals(seeds), maps)}")
     
         
 if __name__ == '__main__':

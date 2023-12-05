@@ -70,13 +70,14 @@ class Intervals:
     # should be in order) or an iterable of (base, limit) pairs (which
     # will be normalised).
     def __init__(self, l):
-        # normalise
         if not l:
             self.ints = []
         elif isinstance(l[0], Interval):
             self.ints = l.copy()
         else: # normalise
             l = sorted(l)
+            assert(all(len(i) == 2 for i in l))
+            assert(all(i[0] < i[1] for i in l))
             i = 0
             merged = []
             while i < len(l):
@@ -109,7 +110,7 @@ class Intervals:
         return Intervals([(x.base,x.limit)
                           for i in self.ints
                           for o in other.ints
-                          if (x := i-o)])
+                          if (x := i & o)])
 
     # union - just use the normaliser
     def __or__(self, other):
