@@ -5,8 +5,8 @@ sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),
 
 import walk
 import file
+import misc
 import re
-import functools
 
 col_re = re.compile(' *([0-9]+) (red|blue|green)')
 
@@ -26,9 +26,8 @@ class Game:
                    for k,n in cols.items())
 
     def power(self):
-        return functools.reduce(lambda a,b: a*b,
-                                (max(r.get(col,0) for r in self.rounds)
-                                 for col in ['red','green','blue']))
+        return misc.prod(max(r.get(col,0) for r in self.rounds)
+                         for col in ['red','green','blue'])
 
 def go(filename):
     print(f"results from {filename}:")
