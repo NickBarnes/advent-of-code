@@ -57,6 +57,9 @@ class Interval:
     def __contains__(self,i):
         return self.base <= i < self.limit
 
+    def __bool__(self):
+        return self.base < self.limit
+
     # same interval, offset by some constant
     def offset(self, k):
         return Interval(self.base+k, self.limit+k)
@@ -119,5 +122,9 @@ class Intervals:
 
     def __contains__(self,i):
         return any(i in inter for inter in self.ints)
+
+    def __bool__(self):
+        return any(i for i in self.ints)
+
     
         
