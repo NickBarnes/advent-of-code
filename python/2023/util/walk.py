@@ -2,7 +2,7 @@ import heapq
 
 def walk(start, weights):
     """Find the shortest paths in a weighted network from `start` to all
-    other nodes.
+    other nodes. `weights` is a function node -> [(node, weight)]
 
     """
     grey = [(0, start)]
