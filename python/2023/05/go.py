@@ -2,23 +2,19 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),
                              'util'))
-
 import walk
 import file
+from interval import *
 
 # I brute-forced part 2 in C (see part2.c) and then wrote a much more
 # pleasant version with interval arithmetic.
 
-from interval import *
-
 class Map:
     def __init__(self, lines):
-        desc = lines[0]
-        d1,d2 = desc.split()
+        d1,d2 = lines[0].split()
         assert(d2 == 'map:')
         self.source,t,self.dest = d1.split('-')
         assert(t == 'to')
-        # convert to intervals
         self.ranges = [(Interval(l[1], l[1] + l[2]),
                         l[0]-l[1])
                        for line in lines[1:]
@@ -35,13 +31,9 @@ class Map:
         hits = []
         ints = inter.ints
         for (src, delta) in self.ranges:
-            misses = []
-            for i in ints:
-                hit = i & src
-                if hit: hits.append(hit.offset(delta))
-                misses += list(i - src)
-            ints = misses
-        return Intervals([(x.base, x.limit) for l in (hits, ints) for x in l])
+            hits += [hit.offset(delta) for i in ints if (hit := i & src)]
+            ints = sum([list(i - src) for i in ints], [])
+        return Intervals([(x.base, x.limit) for x in hits + ints])
 
 # Seed intervals for part 2
 def seed_intervals(seeds):
@@ -74,7 +66,6 @@ def go(filename):
     print("Part 2: minimum location "
           f"{min_location_2(seed_intervals(seeds), maps)}")
     
-        
 if __name__ == '__main__':
     for f in file.files(__file__):
         go(f)
