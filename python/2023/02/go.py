@@ -12,7 +12,7 @@ col_re = re.compile(' *([0-9]+) (red|blue|green)')
 
 class Game:
     def __init__(self, s):
-        assert(s.startswith('Game '))
+        assert s.startswith('Game ')
         id, desc = s.split(':')
         self.id = int(id[5:])
         self.rounds = [{m.group(2):int(m.group(1))

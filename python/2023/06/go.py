@@ -19,9 +19,9 @@ def winner_prod(td):
 def go(filename):
     print(f"results from {filename}:")
     words = file.words(filename)
-    assert(len(words) == 2)
-    assert(words[0][0] == 'Time:')
-    assert(words[1][0] == 'Distance:')
+    assert len(words) == 2
+    assert words[0][0] == 'Time:'
+    assert words[1][0] == 'Distance:'
     td = list(zip(words[0][1:], words[1][1:]))
     print(f"part 1: {winner_prod(td)}")
     td = [(''.join(words[0][1:]), ''.join(words[1][1:]))]

@@ -12,9 +12,9 @@ from interval import *
 class Map:
     def __init__(self, lines):
         d1,d2 = lines[0].split()
-        assert(d2 == 'map:')
+        assert d2 == 'map:'
         self.source,t,self.dest = d1.split('-')
-        assert(t == 'to')
+        assert t == 'to'
         self.ranges = [(Interval(l[1], l[1] + l[2]),
                         l[0]-l[1])
                        for line in lines[1:]
@@ -55,9 +55,9 @@ def go(filename):
     print(f"results from {filename}:")
     sections = file.sections(filename)
     seeds = sections[0]
-    assert(len(seeds) == 1)
+    assert len(seeds) == 1
     seeds = seeds[0].split()
-    assert(seeds[0] == 'seeds:')
+    assert seeds[0] == 'seeds:'
     seeds = seeds[1:]
 
     maps = [Map(s) for s in sections[1:]]

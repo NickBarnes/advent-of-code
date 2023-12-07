@@ -79,8 +79,8 @@ class Intervals:
             self.ints = l.copy()
         else: # normalise
             l = sorted(l)
-            assert(all(len(i) == 2 for i in l))
-            assert(all(i[0] < i[1] for i in l))
+            assert all(len(i) == 2 for i in l)
+            assert all(i[0] < i[1] for i in l)
             i = 0
             merged = []
             while i < len(l):
