@@ -39,9 +39,9 @@ class Hand:
         # fundamental hand type ('kind') is the size of the maximum set
         self.kind = max(c.values(), default=0) + self.jokers
         # two exceptions, which we can represent with intermediate values
-        if self.kind == 3 and len(c) == 2:
+        if self.kind == 3 and len(c) == 2: # only two card types
             self.kind = 3.5 # full house
-        elif self.kind == 2 and len(c) == 3:
+        elif self.kind == 2 and len(c) == 3: # only three card types
             self.kind = 2.5 # two pair
 
     def __eq__(self, other):
