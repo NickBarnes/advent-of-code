@@ -7,29 +7,14 @@ import file
 import functools
 from collections import Counter
 
-@functools.total_ordering
-class Card:
-    def __init__(self, c, i):
-        self.c = c
-        self.rank = i
-
-    def __eq__(self, other):
-        return self.c == other.c
-
-    def __gt__(self, other):
-        return self.rank > other.rank
-
-    def __repr__(self):
-        return f"Card({self.c})"
-
-cards = {c:Card(c,i) for i,c in enumerate('23456789TJQKA')}
-jw_cards = {c:Card(c, i) for i,c in enumerate('J23456789TQKA')}
+ranks = {c:i for i,c in enumerate('23456789TJQKA')}
+j_ranks = {c:i for i,c in enumerate('J23456789TQKA')}
 
 @functools.total_ordering
 class Hand:
     def __init__(self, hand, jokers):
         self.hand = hand
-        self.cards = [(jw_cards if jokers else cards)[c] for c in hand]
+        self.ranks = [(j_ranks if jokers else ranks)[c] for c in hand]
         c = Counter(hand)
         if jokers:
             self.jokers = c['J']
@@ -48,8 +33,8 @@ class Hand:
         return self.hand == other.hand
 
     def __gt__(self, other):
-        return ((self.kind, self.cards) >
-                (other.kind, other.cards)) # uses Card ordering
+        return ((self.kind, self.ranks) >
+                (other.kind, other.ranks))
     
     def __repr__(self):
         return f"<{self.hand}, {self.kind}({self.jokers})>"
