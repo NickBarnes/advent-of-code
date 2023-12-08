@@ -2,7 +2,6 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),
                              'util'))
-
 import walk
 import file
 import re
@@ -17,7 +16,6 @@ class Node:
         self.id = m.group(1)
         self.start = self.id.endswith('A')
         self.finish = self.id.endswith('Z')
-
         self.go = {'L': m.group(2), 'R': m.group(3)}
 
     def resolve(self, g):
@@ -30,7 +28,7 @@ class Node:
 def steps(dirs, node):
     n = 0
     l = len(dirs)
-    while node.id != 'ZZZ':
+    while not node.finish:
         node = node.go[dirs[n % l]]
         n += 1
     return n
@@ -71,10 +69,11 @@ def go(filename):
     assert len(sections) == 2
     assert len(sections[0]) == 1
     directions = sections[0][0]
-    assert len(Counter(directions)) == 2
+    assert len(Counter(directions)) <= 2 # 'L' and 'R'
     graph = {n.id:n for l in sections[1] if (n := Node(l))}
     for n in graph.values():
         n.resolve(graph)
+
     if 'AAA' in graph:
         print("part 1:", steps(directions, graph['AAA']))
     else:
