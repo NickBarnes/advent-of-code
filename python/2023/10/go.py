@@ -14,6 +14,7 @@ def go(filename):
     answer = None
     if len(sections) == 2: # test with given solution to part 2
         answer = int(sections[1][0])
+    # parse graph. Note: this will include many nodes not on the loop.
     graph = {}
     for j,l in enumerate(lines):
         for i,c in enumerate(l):
@@ -33,52 +34,50 @@ def go(filename):
                 start=(i,j)
                 graph[start] = []
     # figure out graph neighbours of start point
-    for k in graph:
-        if start in graph[k]:
-            graph[start].append(k)
+    graph[start] = [k for k in graph if start in graph[k]]
     assert len(graph[start]) == 2 # rubric promises this
 
     # part 1: go around the loop from S, in both directions at once.
-    dist = {}
     visited = set()
     d = 0
     at = set([start])
     while at:
         for node in at:
-            dist[node] = d
             visited.add(node)
         d += 1
         at = list(set(n for node in at for n in graph[node]) - visited)
-    m = max(dist.values())
-    print(f"part 1: max distance on loop is {m}")
+    print(f"part 1: max distance on loop is {d-1}")
 
-    loop = defaultdict(set)
-    for (i,j) in dist:
+    # part 2: how many cells contained inside loop
+    loop = defaultdict(set) # column -> set(rows of cells in loop)
+    for (i,j) in visited:
         loop[i].add(j)
     in_loop = 0
-    for i in loop: # Look down each column in the loop
+    for i in loop: # Look down each column
+        # loop cells in any one column are either '-',
+        # or sequences of | preceded by F/7 and followed by J/L.
+        # - or |...J or 7...L cross the column; other sequences do not.
         rows = sorted(loop[i]) # all loop cells in this column
-        outside = True # start outside
-        for k in range(len(rows)):
-            j = rows[k] # (i,j) is on the loop
+        inside = False # start outside
+        for j, j2 in zip(rows, rows[1:]):
             neighbours = graph[(i,j)]
             if (i-1,j) in neighbours: # '-' or 'J' or '7'
                 if (i+1, j) in neighbours: # '-'
-                    outside = not outside
+                    inside = not inside
                 elif (i,j-1) in neighbours: # 'J'
                     if not from_left: # the loop came from the right
-                        outside = not outside
+                        inside = not inside
                 else: # '7'
                     from_left = True
             elif (i+1, j) in neighbours: # 'F' or 'L'
                 if (i,j-1) in neighbours: # 'L'
                     if from_left: # the loop came from the left
-                        outside = not outside
+                        inside = not inside
                 else: # 'F'
                     from_left = False
-            if not outside:
+            if inside:
                 # how many cells in this column before next loop cell?
-                in_loop += rows[k+1] - 1 - j
+                in_loop += j2 - 1 - j
                     
     print(f"part 2: {in_loop} cells contained by the loop")
     if answer:
