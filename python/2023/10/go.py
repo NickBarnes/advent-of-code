@@ -51,13 +51,13 @@ def go(filename):
         at = list(set(n for node in at for n in graph[node]) - visited)
     m = max(dist.values())
     print(f"part 1: max distance on loop is {m}")
-    # find locations inside loop using winding number
+
     loop = defaultdict(set)
     for (i,j) in dist:
         loop[i].add(j)
     in_loop = 0
     for i in loop: # Look down each column in the loop
-        rows = sorted(loop[i])
+        rows = sorted(loop[i]) # all loop cells in this column
         outside = True # start outside
         for k in range(len(rows)):
             j = rows[k] # (i,j) is on the loop
@@ -66,13 +66,13 @@ def go(filename):
                 if (i+1, j) in neighbours: # '-'
                     outside = not outside
                 elif (i,j-1) in neighbours: # 'J'
-                    if not from_left: # this section of loop came from the right
+                    if not from_left: # the loop came from the right
                         outside = not outside
                 else: # '7'
                     from_left = True
             elif (i+1, j) in neighbours: # 'F' or 'L'
                 if (i,j-1) in neighbours: # 'L'
-                    if from_left:
+                    if from_left: # the loop came from the left
                         outside = not outside
                 else: # 'F'
                     from_left = False
