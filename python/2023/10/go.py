@@ -38,7 +38,7 @@ def go(filename):
             visited.add(node)
         d += 1
         at = list(set(n for node in at for n in graph[node]) - visited)
-    print(f"part 1: max distance on loop is {d-1}")
+    print(f"part 1, max distance on loop: {d-1}")
 
     # part 2: how many cells contained inside loop
     # for another approach, see previous versions in git history.
@@ -57,7 +57,7 @@ def go(filename):
                         hits += 1
                 if hits % 2 == 1:
                     in_loop += 1
-    print(f"part 2: {in_loop} cells contained in the loop")
+    print(f"part 2, cells contained: {in_loop}")
                     
     if answer:
         if in_loop == answer:

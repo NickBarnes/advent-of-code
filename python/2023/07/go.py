@@ -49,8 +49,8 @@ def winnings(lines, jokers = False):
 def go(filename):
     print(f"results from {filename}:")
     lines = file.words(filename)
-    print("part 1: ", winnings(lines))
-    print("part 2: ", winnings(lines, jokers = True))
+    print("part 1, winnings:", winnings(lines))
+    print("part 2, winnings with jokers:", winnings(lines, jokers = True))
 
 if __name__ == '__main__':
     for f in file.files(__file__):

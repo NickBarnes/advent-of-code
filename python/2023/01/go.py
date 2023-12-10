@@ -2,7 +2,6 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),
                              'util'))
-
 import walk
 import file
 
@@ -22,10 +21,10 @@ def firstlast(d):
 def go(filename):
     print(f"results from {filename}:")
     lines = file.lines(filename)
-    print("part 1:", sum(firstlast(list(find_digits(l))) for l in lines))
-    print("part 2:", sum(firstlast(list(find_digits(l, words=True)))
-                         for l in lines))
-    
+    print("part 1, sum:", sum(firstlast(list(find_digits(l)))
+                                for l in lines))
+    print("part 2, sum:", sum(firstlast(list(find_digits(l, words=True)))
+                                for l in lines))
 
 if __name__ == '__main__':
     for f in file.files(__file__):

@@ -61,9 +61,9 @@ def go(filename):
     seeds = seeds[1:]
 
     maps = [Map(s) for s in sections[1:]]
-    print("Part 1: minimum location "
+    print("part 1, minimum location: "
           f"{min_location_1([int(x) for x in seeds], maps)}")
-    print("Part 2: minimum location "
+    print("part 2, minimum location: "
           f"{min_location_2(seed_intervals(seeds), maps)}")
     
 if __name__ == '__main__':

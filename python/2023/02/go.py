@@ -2,7 +2,6 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),
                              'util'))
-
 import walk
 import file
 import misc
@@ -33,10 +32,11 @@ def go(filename):
     print(f"results from {filename}:")
     lines = file.lines(filename)
     games = [Game(l) for l in lines]
-    print(sum([g.id for g in games if g.possible({"red":12,
-                                                  "green":13,
-                                                  "blue":14})]))
-    print(sum(g.power() for g in games))
+    print("part 1, sum of possible games:",
+          sum([g.id for g in games
+               if g.possible({"red":12, "green":13, "blue":14})]))
+    print("part 2, sum of powers of all gamess:",
+          sum(g.power() for g in games))
 
 if __name__ == '__main__':
     for f in file.files(__file__):

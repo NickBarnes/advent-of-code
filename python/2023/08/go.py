@@ -75,13 +75,14 @@ def go(filename):
         n.resolve(graph)
 
     if 'AAA' in graph:
-        print("part 1:", steps(directions, graph['AAA']))
+        print("part 1, steps to exit:", steps(directions, graph['AAA']))
     else:
         print("part 1: no 'AAA' in graph")
 
     if 'input' in filename:
-        print("part 2:", math.lcm(*(loop_len(n, directions)
-                                    for n in graph.values() if n.start)))
+        print("part 2, steps to all exits:",
+              math.lcm(*(loop_len(n, directions)
+                         for n in graph.values() if n.start)))
     else:
         print("part 2 not done on test input.")
 

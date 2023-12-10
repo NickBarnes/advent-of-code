@@ -2,10 +2,8 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),
                              'util'))
-
 import walk
 import file
-
 import re
 digits = re.compile('[0-9]+')
 
@@ -38,10 +36,10 @@ def go(filename):
 
             if found_symbol:
                 partsum += n
-    print(f"part one: sum of attached parts: {partsum}")
+    print(f"part 1, sum of attached parts: {partsum}")
 
     gearsum = sum(nums[0]*nums[1] for p,nums in stars.items() if len(nums) == 2)
-    print(f"part two: sum of gear ratios: {gearsum}")
+    print(f"part 2, sum of gear ratios: {gearsum}")
 
 if __name__ == '__main__':
     for f in file.files(__file__):

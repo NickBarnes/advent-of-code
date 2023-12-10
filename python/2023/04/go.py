@@ -2,7 +2,6 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),
                              'util'))
-
 import walk
 import file
 
@@ -24,7 +23,7 @@ def go(filename):
     lines = file.lines(filename)
     cards = {c.id: c for l in lines if (c := Card(l))}
     point_total = sum(c.points() for c in cards.values())
-    print(f"Points (part 1): {point_total}")
+    print(f"part 1, points: {point_total}")
 
     # Do part 2 mechanically because that's more than fast enough
     for n in range(1,len(cards)+1):
@@ -32,7 +31,7 @@ def go(filename):
         for i in range(c.matches):
             cards[n+i+1].count += c.count
     card_count = sum(c.count for c in cards.values())
-    print(f"Cards (part 2): {card_count}")
+    print(f"part 2, cards: {card_count}")
         
 
 if __name__ == '__main__':
