@@ -1,5 +1,6 @@
 import sys
 import os
+import functools
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),
                              'util'))
 import walk
@@ -7,28 +8,16 @@ import file
 import interval
 import misc
 
-# memoizer for `ways`
-mem = {}
+@functools.cache
 def ways(pattern, counts):
-    # memoized
-    key = (pattern,tuple(counts))
-    if key in mem:
-        return mem[key]
-
     if not pattern: # end of the pattern
-        if not counts: # end of the search
-            res = 1
-        else: # still looking, so we've failed
-            res = 0
+        return 0 if counts else 1 # succeed if we're at the end of the search
     elif not counts: # not looking for any more
-        if '#' in pattern: # but there is one, so we've failed
-            res = 0
-        else: # none left, so we can set all the ? to . and succeed
-            res = 1
+        return 0 if '#' in pattern else 1 # succeed if there's nothing left
     else:
         c = pattern[0]
         if c == '.': # ignore leading '.'
-            res = ways(pattern[1:], counts)
+            return ways(pattern[1:], counts)
 
         else:
             # possible spring: how many ways if it is a spring?
@@ -40,12 +29,9 @@ def ways(pattern, counts):
                 with_spring = ways(pattern[counts[0]+1:], counts[1:])
 
             if c == '?': # possible spring: count both ways
-                res = with_spring + ways(pattern[1:], counts)
+                return with_spring + ways(pattern[1:], counts)
             else: # actual spring
-                res = with_spring
-    # memoize
-    mem[key] = res
-    return res
+                return with_spring
 
 def unfold(pattern, counts):
     return '?'.join([pattern] * 5), counts * 5
@@ -53,7 +39,7 @@ def unfold(pattern, counts):
 def go(filename):
     print(f"results from {filename}:")
     lines = file.lines(filename)
-    rows = [(l[0], [int(x) for x in l[1].split(',')])
+    rows = [(l[0], tuple(int(x) for x in l[1].split(',')))
             for line in lines if (l := line.split())]
     print("part 1, total arrangements:",
           sum(ways(*row) for row in rows))
