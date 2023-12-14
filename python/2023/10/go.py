@@ -1,14 +1,5 @@
-import sys
-import os
-from collections import defaultdict
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                             'util'))
-import walk
-import file
-
-def go(filename):
-    print(f"results from {filename}:")
-    sections = file.sections(filename)
+def go(input):
+    sections = parse.sections(input)
     lines = sections[0]
     answer = None
     if len(sections) == 2: # test with given solution to part 2
@@ -64,8 +55,3 @@ def go(filename):
             print("Correct!")
         else:
             print("Incorrect!")
-            
-    
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)

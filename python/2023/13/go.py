@@ -1,13 +1,3 @@
-import sys
-import os
-from collections import defaultdict
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                             'util'))
-import walk
-import file
-import interval
-import misc
-
 def bitmap(s):
     return sum(1 << i for i,c in enumerate(s) if c == '#')
 
@@ -29,14 +19,9 @@ def score(rows, smudges):
             return i+1
     return 0
 
-def go(filename):
-    print(f"results from {filename}:")
-    sections = file.sections(filename)
+def go(input):
+    sections = parse.sections(input)
     print("part 1, total of clean mirrors:",
           sum(score(rows, 0) for rows in sections))
     print("part 2, total of mirrors with a single smudge:",
           sum(score(rows, 1) for rows in sections))
-
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)

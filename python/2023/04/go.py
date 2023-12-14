@@ -1,10 +1,3 @@
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                             'util'))
-import walk
-import file
-
 class Card:
     def __init__(self, s):
         id, data = s.split(':')
@@ -18,9 +11,8 @@ class Card:
     def points(self):
         return 0 if self.matches == 0 else (1 << self.matches-1)
 
-def go(filename):
-    print(f"results from {filename}:")
-    lines = file.lines(filename)
+def go(input):
+    lines = parse.lines(input)
     cards = {c.id: c for l in lines if (c := Card(l))}
     point_total = sum(c.points() for c in cards.values())
     print(f"part 1, points: {point_total}")
@@ -32,8 +24,3 @@ def go(filename):
             cards[n+i+1].count += c.count
     card_count = sum(c.count for c in cards.values())
     print(f"part 2, cards: {card_count}")
-        
-
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)

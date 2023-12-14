@@ -1,12 +1,3 @@
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                             'util'))
-import walk
-import file
-import functools
-from collections import Counter
-
 ranks = {c:i for i,c in enumerate('23456789TJQKA')}
 j_ranks = {c:i for i,c in enumerate('J23456789TQKA')}
 
@@ -46,12 +37,7 @@ def winnings(lines, jokers = False):
     # enumerate the ranking, multiply rank by the bid
     return sum((k+1) * b for k, (_, i ,b) in enumerate(ranked))
 
-def go(filename):
-    print(f"results from {filename}:")
-    lines = file.words(filename)
+def go(input):
+    lines = parse.words(input)
     print("part 1, winnings:", winnings(lines))
     print("part 2, winnings with jokers:", winnings(lines, jokers = True))
-
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)

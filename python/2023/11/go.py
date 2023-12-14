@@ -1,12 +1,3 @@
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                             'util'))
-import walk
-import file
-import interval
-import misc
-
 def expand(galaxies, empty_rows, empty_cols, factor):
     return list((i + di*(factor-1), j + dj*(factor-1))
                 for (i,j) in galaxies
@@ -19,9 +10,8 @@ def total_distance(galaxies):
                for k in range(len(galaxies))
                for l in range(k))
 
-def go(filename):
-    print(f"results from {filename}:")
-    lines = file.lines(filename)
+def go(input):
+    lines = parse.lines(input)
     galaxies = set((i,j) for j in range(len(lines))
                    for i in range(len(lines[j]))
                    if lines[j][i] == '#')
@@ -34,7 +24,3 @@ def go(filename):
           total_distance(expand(galaxies, empty_rows, empty_cols, 2)))
     print(f"part 2, total distance with expansion 1000000:",
           total_distance(expand(galaxies, empty_rows, empty_cols, 1000000)))
-
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)

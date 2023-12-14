@@ -1,13 +1,3 @@
-import sys
-import os
-import functools
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                             'util'))
-import walk
-import file
-import interval
-import misc
-
 @functools.cache
 def ways(pattern, counts):
     if not pattern: # end of the pattern
@@ -36,16 +26,11 @@ def ways(pattern, counts):
 def unfold(pattern, counts):
     return '?'.join([pattern] * 5), counts * 5
 
-def go(filename):
-    print(f"results from {filename}:")
-    lines = file.lines(filename)
+def go(input):
+    lines = parse.lines(input)
     rows = [(l[0], tuple(int(x) for x in l[1].split(',')))
             for line in lines if (l := line.split())]
     print("part 1, total arrangements:",
           sum(ways(*row) for row in rows))
     print("part 2, total arrangements with unfolding:",
           sum(ways(*unfold(*row)) for row in rows))
-
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)

@@ -1,15 +1,7 @@
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                             'util'))
-import walk
-import file
-import re
 digits = re.compile('[0-9]+')
 
-def go(filename):
-    print(f"results from {filename}:")
-    lines = file.lines(filename)
+def go(input):
+    lines = parse.lines(input)
     partsum = 0 # sum of all part numbers adjacent to a symbol
     stars = {} # (x,y) -> list of part numbers adjacent to a '*' there
     for j, l in enumerate(lines):
@@ -40,7 +32,3 @@ def go(filename):
 
     gearsum = sum(nums[0]*nums[1] for p,nums in stars.items() if len(nums) == 2)
     print(f"part 2, sum of gear ratios: {gearsum}")
-
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)

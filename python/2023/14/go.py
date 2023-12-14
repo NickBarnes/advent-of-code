@@ -1,13 +1,3 @@
-import sys
-import os
-from collections import defaultdict
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                             'util'))
-import walk
-import file
-import interval
-import misc
-
 # what's the load of a given set of round rocks?
 def load(round, rows):
     return sum(rows - j for (i,j) in round)
@@ -73,16 +63,11 @@ def cycle(round, square, size, count):
         pos_memo[key] = i
         load_memo[i] = load(round, size)
 
-def go(filename):
-    print(f"results from {filename}:")
-    rows = file.lines(filename)
+def go(input):
+    rows = parse.lines(input)
     round = [(i,j) for j,row in enumerate(rows) for i,c in enumerate(row) if c == 'O']
     square = [(i,j) for j,row in enumerate(rows) for i,c in enumerate(row) if c == '#']
     print("part 1, load after tilting north:",
           load(roll(round, square, len(rows), 'N'), len(rows)))
     print("part 2, load after a billion cycles:",
           cycle(round, square, len(rows), 1_000_000_000))
-
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)

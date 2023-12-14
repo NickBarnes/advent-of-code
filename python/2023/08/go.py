@@ -1,13 +1,3 @@
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                             'util'))
-import walk
-import file
-import re
-import math
-from collections import Counter
-
 node_re = re.compile('([1-9A-Z]{3}) = \(([1-9A-Z]{3}), ([1-9A-Z]{3})\)')
 
 class Node:
@@ -63,9 +53,8 @@ def loop_len(node, dirs):
     # (and would need the values in the set `finishes`).
     return loop_len
 
-def go(filename):
-    print(f"results from {filename}:")
-    sections = file.sections(filename)
+def go(input):
+    sections = parse.sections(input)
     assert len(sections) == 2
     assert len(sections[0]) == 1
     directions = sections[0][0]
@@ -79,13 +68,9 @@ def go(filename):
     else:
         print("part 1: no 'AAA' in graph")
 
-    if 'input' in filename:
+    if len(graph) > 100:
         print("part 2, steps to all exits:",
               math.lcm(*(loop_len(n, directions)
                          for n in graph.values() if n.start)))
     else:
         print("part 2 not done on test input.")
-
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)

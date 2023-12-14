@@ -2,13 +2,13 @@
 all: $(foreach dir,$(sort $(wildcard [012]*)),day-$(dir)-run)
 
 .PHONY: day-%
-day-%: %/go.py %/test*.txt %/input.txt
-	for f in $(wildcard $*/test*.txt); do /usr/bin/time python3 $*/go.py $$f; done
-	/usr/bin/time python3 $*/go.py $*/input.txt
+day-%: run.py %/go.py %/test*.txt %/input.txt
+	/usr/bin/time python3 run.py -t $*
+	/usr/bin/time python3 run.py $*
 
 .PHONY: day-%-run
-day-%-run: %/go.py %/input.txt
-	python3 $*/go.py $*/input.txt
+day-%-run: run.py %/go.py %/input.txt
+	python3 run.py $*
 
 .PHONY: clean
 clean:

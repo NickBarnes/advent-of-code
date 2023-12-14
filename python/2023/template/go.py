@@ -1,21 +1,10 @@
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                             'util'))
-import walk
-import file
-import interval
-import misc
+# Template for AoC daily solution. To add to imports, see
+# util/__init__.py.
 
-def go(filename):
-    print(f"results from {filename}:")
+def go(input)
     # pick one:
-    # sections = file.sections(filename)
-    # lines = file.lines(filename)
-    # words = file.words(filename)
-    # digits = file.digits(filename)
-    # chars = file.chars(filename)
-
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)
+    # sections = parse.sections(input)
+    # lines = parse.lines(input)
+    # words = parse.words(input)
+    # digits = parse.digits(input)
+    # chars = parse.chars(input)
