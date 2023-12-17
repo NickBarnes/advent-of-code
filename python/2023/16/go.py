@@ -19,7 +19,8 @@ def beam(grid, pd):
                 ds = [(0,-1),(0,1)]
             else:
                 ds = [d]
-            newpd += [(newp,d) for d in ds if (newp := (p[0]+d[0],p[1]+d[1])) in grid]
+            newpd += [(newp,d) for d in ds
+                      if (newp := (p[0]+d[0],p[1]+d[1])) in grid]
         pd = newpd
     return len(energized)
 
@@ -33,5 +34,6 @@ def max_beam(grid, rows, cols):
 def go(input):
     lines = parse.lines(input)
     grid = {(i,j):c for j,row in enumerate(lines) for i,c in enumerate(row)}
-    print(beam(grid, [((0,0),(1,0))]))
-    print(max_beam(grid, len(lines), len(lines[0])))
+    print("part 1, energized tiles:", beam(grid, [((0,0),(1,0))]))
+    print("part 2, max energized tiles:",
+          max_beam(grid, len(lines), len(lines[0])))
