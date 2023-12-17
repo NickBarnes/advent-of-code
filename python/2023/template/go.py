@@ -1,7 +1,7 @@
 # Template for AoC daily solution. To add to imports, see
 # util/__init__.py.
 
-def go(input)
+def go(input):
     # pick one:
     # sections = parse.sections(input)
     # lines = parse.lines(input)
