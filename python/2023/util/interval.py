@@ -93,6 +93,9 @@ class Intervals:
                     i = i+1
                 merged.append((base,limit))
             self.ints = list(map(lambda m: Interval(m[0],m[1]), merged))
+
+    def count(self):
+        return len(self.ints)
     
     def __repr__(self):
         return (f"<{len(self.ints)}:" + (", ".join(repr(i) for i in self.ints))
