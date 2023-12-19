@@ -2,10 +2,10 @@ import operator
 
 flow_re = re.compile('([a-z]+){(.*)}')
 rule_re = re.compile('([xmas])([><])([0-9]+):([a-z]+|A|R)')
-part_re = re.compile('{x=([0-9]+),m=([0-9]+),a=([0-9]+),s=([0-9]+)')
+part_re = re.compile('{x=([0-9]+),m=([0-9]+),a=([0-9]+),s=([0-9]+)}')
 
 cats = {c:i for i,c in enumerate('xmas')}
-comps = {'>':operator.gt, '<':operator.lt}
+op_fns = {'>':operator.gt, '<':operator.lt}
 
 class Flow:
     def __init__(self, s):
@@ -17,34 +17,32 @@ class Flow:
         m = flow_re.match(s)
         self.name = m.group(1)
         rules = m.group(2).split(',')
-        self.rules = [(cats[m.group(1)], m.group(2), comps[m.group(2)],
-                       int(m.group(3)), m.group(4))
-                      for rule in rules[:-1] if (m := rule_re.match(rule))]
+        self.rules = [rule_re.match(rule).groups() for rule in rules[:-1]]
         self.default = rules[-1]
 
     def resolve(self, flows):
         self.default = flows[self.default]
-        self.rules=[(cat, compname, comp, val, flows[next])
-                    for cat, compname, comp, val, next in self.rules]
-
+        self.rules=[(cats[cat], op, op_fns[op], int(crit), flows[next])
+                    for cat, op, crit, next in self.rules]
+                      
     def apply(self, vals):
-        for cat, _, comp, val, next in self.rules:
-            if comp(vals[cat],val):
+        for cat, _, fn, crit, next in self.rules:
+            if fn(vals[cat], crit):
                 return next
         return self.default
 
     def apply_ranges(self, ranges):
-        for cat, compname, _, val, next in self.rules:
+        for cat, op, _, crit, next in self.rules:
             nr = ranges[:]
-            if compname == '>': # x > 37
-                nr[cat] = (max(val+1, nr[cat][0]), nr[cat][1])
-                ranges[cat] = (ranges[cat][0], min(ranges[cat][1], val))
-            else: # a < 2100
-                nr[cat] = (nr[cat][0], min(ranges[cat][1], val-1))
-                ranges[cat] = (max(val, ranges[cat][0]), ranges[cat][1])
-            yield (next, nr)
-        else: # made it to the default case
-            yield (self.default, ranges)
+            lo,hi = ranges[cat]
+            if op == '>':
+                nr[cat] = (max(crit+1, lo), hi)
+                ranges[cat] = (lo, min(hi, crit))
+            else:
+                nr[cat] = (lo, min(hi, crit-1))
+                ranges[cat] = (max(crit, lo), hi)
+            yield next, nr
+        yield self.default, ranges
 
 def go(input):
     sections = parse.sections(input)
