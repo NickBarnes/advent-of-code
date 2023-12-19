@@ -25,7 +25,26 @@ class Flow:
     def resolve(self, flows):
         self.default = flows[self.default]
         self.rules=[(cat, compname, comp, val, flows[next])
-                    for (cat, compname, comp, val, next) in self.rules]
+                    for cat, compname, comp, val, next in self.rules]
+
+    def apply(self, vals):
+        for cat, _, comp, val, next in self.rules:
+            if comp(vals[cat],val):
+                return next
+        return self.default
+
+    def apply_ranges(self, ranges):
+        for cat, compname, _, val, next in self.rules:
+            nr = ranges[:]
+            if compname == '>': # x > 37
+                nr[cat] = (max(val+1, nr[cat][0]), nr[cat][1])
+                ranges[cat] = (ranges[cat][0], min(ranges[cat][1], val))
+            else: # a < 2100
+                nr[cat] = (nr[cat][0], min(ranges[cat][1], val-1))
+                ranges[cat] = (max(val, ranges[cat][0]), ranges[cat][1])
+            yield (next, nr)
+        else: # made it to the default case
+            yield (self.default, ranges)
 
 def go(input):
     sections = parse.sections(input)
@@ -36,56 +55,28 @@ def go(input):
     for f in flows.values():
         f.resolve(flows)
         
-    parts = [[int(x) for x in m.groups()] for l in sections[1] if (m := part_re.match(l))]
+    parts = [[int(x) for x in m.groups()]
+             for l in sections[1] if (m := part_re.match(l))]
 
     total = 0
-    for p in parts:
+    for part in parts:
         flow = flows['in']
         while flow.rules:
-            for rule in flow.rules:
-                if rule[2](p[rule[0]],rule[3]):
-                    flow = rule[4]
-                    break
-            else:
-                flow = flow.default
+            flow = flow.apply(part)
         if flow.name == 'A':
-            total += sum(p)
+            total += sum(part)
     print("part 1, rating sum of accepted parts:", total)
     
     ways = 0
-    queue = [(flows['in'], list((1,4000) for a in range(4)))]
+    queue = [(flows['in'], list((1,4000) for cat in range(4)))]
     while queue:
-        f,ranges = queue.pop()
+        f, ranges = queue.pop()
+        if any(r[0] > r[1] for r in ranges): # empty range
+            continue
         if f.name == 'R':
             continue
         elif f.name == 'A':
             ways += misc.prod(r[1]-r[0]+1 for r in ranges)
-            continue
         else:
-            for rule in f.rules:
-                i = rule[0]
-                if rule[1] == '>': # x > 37
-                    if ranges[i][1] > rule[3]: # follow this rule ...
-                        if rule[3] >= ranges[i][0]:
-                            nr = ranges[:]
-                            nr[i] = (rule[3]+1, nr[i][1])
-                            queue.append((rule[4], nr))
-                        else: # always follow this rule
-                            queue.append((rule[4], ranges))
-                            break
-                        # range is split, so go both ways
-                        ranges[i] = (ranges[i][0], rule[3])
-                else: # a < 2100
-                    if ranges[i][0] < rule[3]:
-                        if rule[3] <= ranges[i][1]:
-                            nr = ranges[:]
-                            nr[i] = (nr[i][0], rule[3]-1)
-                            queue.append((rule[4], nr))
-                        else: # always follow this rule
-                            queue.append((rule[4], ranges))
-                            break
-                        # range is split
-                        ranges[i] = (rule[3], ranges[i][1])
-            else: # made it to the default case
-                queue.append((f.default, ranges))
+            queue += list(f.apply_ranges(ranges))
     print("part 2, acceptable rating combinations:", ways)
