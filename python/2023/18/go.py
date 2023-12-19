@@ -5,7 +5,7 @@ dirs = {'L':(-1,0),
         'U':(0,-1),
         'D':(0,1)}
 
-decode = {i:c for i,c in enumerate('RDLU')}
+decode = dict(enumerate('RDLU'))
 
 def lagoon(instructions):
     points = defaultdict(set)
@@ -30,9 +30,9 @@ def lagoon(instructions):
                 # we have to adjust for squares in this column
                 total += len(newi)
                 if y1 in rows and y2 in rows:
-                    total += 1
+                    total += 1 # removes a whole range
                 elif y1 not in rows and y2 not in rows:
-                    total -= 1
+                    total -= 1 # splits a range into two
             else: # this trench adds to existing ranges
                 ranges |= newi
         x = xn
@@ -40,9 +40,9 @@ def lagoon(instructions):
     return total
 
 def go(input):
-    instructions = [(dirs[m.group(1)], int(m.group(2)), int(m.group(3),base=16))
-                    for l in parse.lines(input) if (m := line_re.match(l))]
-    print("part 1, small lagoon area:", lagoon(instructions))
-    instructions = [(dirs[decode[x % 16]], x // 16, None) for _,_,x in instructions]
-    print("part 2, large lagoon area:", lagoon(instructions))
-        
+    instrs = [(dirs[m.group(1)], int(m.group(2)), int(m.group(3),base=16))
+              for l in parse.lines(input) if (m := line_re.match(l))]
+    print("part 1, small lagoon area:", lagoon(instrs))
+    instrs = [(dirs[decode[x % 16]], x // 16, None)
+                    for _,_,x in instrs]
+    print("part 2, large lagoon area:", lagoon(instrs))
