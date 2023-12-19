@@ -6,22 +6,25 @@ def least_heat(digits, ultra=False, debug=False):
     def weights(n):
         i,j,di,dj,c = n
         ds = []
-        if di:
-            if c == 0 or c >= min_run: # can turn
-                ds += [(0,1),(0,-1)]
-            if c != max_run: # can continue
-                ds.append((di,0))
-        if dj:
-            if c == 0 or c >= min_run: # can turn
-                ds += [(1,0),(-1,0)]
-            if c != max_run: # can continue
-                ds.append((0,dj))
-
-        for ndi,ndj in ds:
+        results = []
+        def dir(ndi,ndj):
             ni,nj = i+ndi, j+ndj
             if 0 <= ni < cols and 0 <= nj < rows:
-                yield ((ni,nj,ndi,ndj, c+1 if di == ndi and dj == ndj else 1),
-                       digits[nj][ni])
+                results.append(((ni,nj,ndi,ndj, c+1 if di == ndi and dj == ndj else 1),
+                                digits[nj][ni]))
+        if di:
+            if c == 0 or c >= min_run: # can turn
+                dir(0,1)
+                dir(0,-1)
+            if c != max_run: # can continue
+                dir(di,0)
+        if dj:
+            if c == 0 or c >= min_run: # can turn
+                dir(1,0)
+                dir(-1,0)
+            if c != max_run: # can continue
+                dir(0,dj)
+        return results
     shortest = walk.walk((0,0,1,0,0), weights)
     return min(w for n,w in shortest.items()
                if n[0] == cols-1 and n[1] == rows-1
