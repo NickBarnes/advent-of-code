@@ -57,6 +57,8 @@ class Gate:
         return []
 
 # Checks that a sub-circuit behaves in the expected manner:
+#
+# - the output gate is always low before a button push.
 # 
 # - rising edges of the output gate always happen on the same tick number
 #   after the most recent button push.
@@ -141,9 +143,10 @@ def go(input):
     # 
     # By observation, the 'rx' gate has one input, which is a
     # conjunction of four other gates and only has 'rx' as
-    # output. Call this last gate before 'rx' last_gate, and its four
-    # inputs the "output gates". Each output gate is a conjunction
-    # with a single output. This code checks these observations.
+    # output. Call this last gate `last_gate`, and its four inputs the
+    # "output gates" (`output_gates`). Each output gate is a
+    # conjunction with a single output. This code checks these
+    # observations.
     #
     # Interpreting the problem description with these observations, we
     # want the number of button pushes until last_gate outputs a low
@@ -161,14 +164,19 @@ def go(input):
     assert all(len(gates[g].outputs) == 1 for g in output_gates) # with one output
 
     # Also by observation, the broadcaster has 4 outputs ("the first
-    # gates"), each of which drives a sub-circuit which has nothing in
-    # common with the other sub-circuits except that it drives one of
-    # the output gates (and thence the last gate and 'rx'). This code
-    # finds the sub-circuits and asserts these invariants.
+    # gates", `first_gates`), each of which drives a sub-circuit which
+    # has nothing in common with the other sub-circuits except that it
+    # drives one of the output gates (and thence the last gate and
+    # 'rx'). This code finds the sub-circuits and asserts these
+    # invariants.
     #
     # Again, interpreting the problem description, we want the number
-    # of button pushes until some tick on which the most recent output
-    # from each sub-circuit's output gate is a high pulse.
+    # of button pushes until *some tick* on which the most recent
+    # output from each sub-circuit's output gate is a high pulse. It's
+    # possible that different sub-circuits push the output high after
+    # different numbers of ticks on different button push counts; we
+    # need a button push count on which all the different sub-citcuit
+    # outputs are high on the same tick.
 
     first_gates = gates['broadcaster'].outputs
     sub_output = {}
@@ -206,19 +214,21 @@ def go(input):
     # - The output gate only goes high on specific button pushes. The
     # number of ticks within a button push on which the output gate
     # goes high, and then low, are the same for each sub-circuit (3
-    # and 5 respectively, FWIW). So we don't have to worry about
-    # tick co-ordination between sub-circuits.
+    # and 5 respectively, FWIW). So we don't have to worry about tick
+    # co-ordination between sub-circuits.
     # 
-    # - Every time the output gate goes high, the state of the
-    # sub-circuit is the same (all flip-flops, all conjunctions).
+    # - Every time the output gate of a sub-circuit goes high, the
+    # state of the sub-circuit (all flip-flops, all conjunctions) is
+    # the same.
     #
     # - For any given sub-circuit, the number of button pushes before
     # the first rising edge, and the number of button pushes between
-    # rising edges, is the same.
+    # rising edges, is the same (if this were not true we'd have to
+    # use the Chinese Remainder Theorem).
     #
     # So the number of button pushes before all output gates rise
-    # together is the LCM of the numbers of button pushes beween
-    # rising edges for the different sub-circuits.
+    # together is simply the LCM of the numbers of button pushes
+    # beween rising edges for the different sub-circuits.
 
     edge_ticks = {}
     cycles = {}
