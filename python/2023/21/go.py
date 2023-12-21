@@ -59,7 +59,6 @@ def go(input):
     lines = [line for line in lines if line[0] not in '123456789']
     rows = len(lines)
     cols = len(lines[0])
-    print(rows, cols)
     grid = set((i,j) for j,line in enumerate(lines)
                for i,c in enumerate(line) if c != '#')
     starts = [(i,j) for j,line in enumerate(lines)
@@ -90,13 +89,17 @@ def go(input):
     # of steps.
     U, ranges = unfold(grid, starts[0], rows, cols)
 
+    # Assuming these lets the corner cell calculations go much faster.
+    # See git history for the slow version without these assertions.
+    assert rows == cols
+    assert rows & 1
+
     # We are given solutions for several step counts on the test grid.
     for step_count in step_counts[1:]:
         steps = step_count[0]
         # cells with correct parity inside unfolded map
         total = sum(1 for v in ranges.values()
                     if v <= steps and (v ^ steps) & 1 == 0)
-        progress = 0
         for i,j in grid:
             for k in range(-U, U+1):
                 # count cells going linearly away from the edge
@@ -107,35 +110,24 @@ def go(input):
                     dist = ranges[(i,j,ti,tj)] # matching cell in edge tile
                     if dist < steps:
                         tiles = (steps - dist) // mul
-                        if mul % 2 == 0: # all tiles in this row hit or miss
-                            if (dist ^ steps) & 1 == 0: # hit
-                                total += tiles
-                        else: # alternate tiles hit
-                            total += tiles // 2 # alternate tiles
-                            # one more if we miss and tiles is odd
-                            if (dist ^ steps) & 1 == 1:
-                                total += tiles & 1
+                        total += tiles // 2 # alternate tiles
+                        # one more if we miss and tiles is odd
+                        if (dist ^ steps) & 1 == 1:
+                            total += tiles & 1
             # now the corners
             for ti in (-U,U):
                 for tj in (-U,U):
                     cells = 0
-                    dist = ranges[(i,j,ti,tj)] # cell in corner tile
-                    while True:
-                        dist += rows # next tile row
-                        if dist > steps:
-                            break
-                        tiles = (steps - dist) // cols # tiles in row
-                        # think about parity
-                        if cols % 2 == 0: # all tiles in row hit or miss
-                            if (dist ^ steps) & 1 == 0: # hit
-                                total += tiles
-                        else: # alternate tiles hit
-                            total += tiles // 2 # alternate tiles
-                             # one more if we miss and tiles is odd
-                            if (dist ^ steps) & 1 == 1:
-                                total += tiles & 1
-            progress += 1
-            print(f"{progress}/{len(grid)}", end='\r') # because slow!
+                    dist = ranges[(i,j,ti,tj)] + rows # cell above corner tile
+                    if dist > steps:
+                        continue
+                    tiles = (steps - dist) // cols # tiles in this row
+                    if (dist ^ steps) & 1 == 0: # hit, so first tile misses
+                        hits = tiles // 2
+                        total += hits * (hits + 1)
+                    else: # miss, so first tile hits
+                        hits = (tiles + 1) // 2
+                        total += hits * hits
         print("part 2, plots reachable with unfolded map, "
               f"{steps} steps: {total}", end='')
         if len(step_count) > 1:
