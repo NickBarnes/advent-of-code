@@ -1,6 +1,3 @@
-# Observations:
-# x and y coordinates are in [0,9]
-
 brick_re = re.compile('([0-9]+),([0-9]+),([0-9]+)~([0-9]+),([0-9]+),([0-9]+)')
 
 class Brick:
@@ -15,6 +12,8 @@ class Brick:
         self.cols = set((x,y)
                         for x in range(x1,x2+1)
                         for y in range(y1,y2+1))
+        self.on = set() # bricks this one rests on
+        self.under = set() # bricks resting on this one
 
     def __repr__(self):
         return f"<{self.id}: {self.p1}-{self.p2}>"
@@ -24,37 +23,36 @@ def go(input):
     bricks = [Brick(line, i) for i,line in enumerate(lines)]
     cols = set(col for brick in bricks for col in brick.cols)
 
-    # the bricks can all fall down in order of their minimum 'z' coordinate.
-    height = {c:0 for c in cols} # floor
-    top_brick = {c:None for c in cols}
+    # Bricks all fall down in order of their minimum 'z' coordinate,
+    # computing the 'on' and 'under' sets.
+    base = {c:(0, None) for c in cols} # floor
     for brick in sorted(bricks, key = lambda brick: brick.z1):
         # brick falls down
-        brick.new_z1 = max(height[c] for c in brick.cols) + 1
-        brick.on = set()
-        brick.under = set()
+        new_z1 = max(base[c][0] for c in brick.cols) + 1
+        top = new_z1 + brick.z2 - brick.z1 # don't need to remember this
         for c in brick.cols:
-            if brick.new_z1 > 1: # some lower brick
-                if height[c] == brick.new_z1 - 1: # a lower brick here
-                    supporter = top_brick[c]
-                    brick.on.add(supporter)
-                    supporter.under.add(brick)
-            height[c] = brick.new_z1 + brick.z2 - brick.z1
-            top_brick[c] = brick
+            h, lower = base[c]
+            if lower:
+                if h == new_z1 - 1: # resting on lower brick
+                    brick.on.add(lower)
+                    lower.under.add(brick)
+            base[c] = top, brick
+
     print("part 1, safe bricks to disintegrate:",
           sum(1 for brick in bricks
               if all(len(b.on) > 1 for b in brick.under)))
 
     total = 0
     for brick in bricks:
-        gone = set([brick])
-        might_go = set(b for b in brick.under)
-        while might_go:
-            going = set(b for b in might_go if b.on.issubset(gone))
-            if not going: # nothing left to fall down
+        fallen = set([brick])
+        might_fall = set(b for b in brick.under)
+        while might_fall:
+            falling = set(b for b in might_fall if b.on <= fallen)
+            if not falling: # nothing left to fall down
                 break
-            might_go -= going
-            for g in going:
-                might_go |= g.under # newly less-supported bricks
-            gone |= going
-        total += len(gone) - 1 # don't count `brick` itself.
+            might_fall -= falling
+            for b in falling:
+                might_fall |= b.under # newly less-supported bricks
+            fallen |= falling
+        total += len(fallen) - 1 # don't count `brick` itself.
     print("part 2, total falling bricks:", total)
