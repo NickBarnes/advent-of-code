@@ -4,6 +4,6 @@ import re
 import functools
 import math
 
-__all__ = ('interval misc walk parse'
+__all__ = ('interval misc walk parse linear'
            ' re functools math'
            ' defaultdict Counter').split()
