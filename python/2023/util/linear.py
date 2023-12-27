@@ -53,7 +53,8 @@ class Matrix:
 
     # sub-matrix: remove row i and column j
     def sub_matrix(self,i,j):
-        return Matrix([row[:j] + row[j+1:] for row in (self.a[:i]+self.a[i+1:])])
+        return Matrix([row[:j] + row[j+1:]
+                       for row in (self.a[:i]+self.a[i+1:])])
 
     # minor: determinant of sub-matrix
     def minor(self,i,j):
@@ -72,29 +73,51 @@ class Matrix:
         return sum(((-1)**c) * self.a[0][c] * self.minor(0,c)
                    for c in range(self.cols))
 
-    def inverse(self):
+    # Matrix inversion.
+    # 
+    # If the determinant is zero, returns None.
+    # If 'divided' is True, returns the inverted matrix (as floats, if
+    # the original matrix contains ints or floats).
+    # If 'divided' is False, returns the inverted matrix multiplied by
+    # the determinant (this is guaranteed to be all ints if the
+    # original matrix contents are ints), and the determinant itself
+    # as a separate
+    def inverse(self, divided=True):
         assert self.rows == self.cols
         N = self.rows
         d = self.determinant()
+        if d == 0:
+            if divided: return None, d
+        divide = lambda c: c/d if divided else c
+        divisor = d if divided else 1
         # 2x2 base case
         if N == 2:
-            return Matrix([[     self.a[1][1]/d, -1 * self.a[0][1]/d],
-                           [-1 * self.a[1][0]/d,      self.a[0][0]/d]])
-        # Cramer's rule: the inverse is the transposed matrix of
-        # cofactors divided by the determinant.
-        return Matrix([[self.cofactor(r,c)/d for r in range(N)]
-                       for c in range(N)])
+            return Matrix(((divide(self.a[1][1]), -1 *
+                            divide(self.a[0][1])),
+                           (-1 * divide(self.a[1][0]),
+                            divide(self.a[0][0])))), d
+        else:
+            # Cramer's rule: the inverse is the transposed matrix of
+            # cofactors divided by the determinant.
+            return Matrix([[divide(self.cofactor(r,c)) for r in range(N)]
+                           for c in range(N)]), d
 
-    def product(self, other):
-        assert self.cols == other.rows
-        return Matrix([[sum(self.a[i][k] * other.a[k][j] for k in range(other.rows))
-                        for j in range(other.cols)]
-                       for i in range(self.rows)])
+    def __mul__(self, other):
+        if isinstance(other, numbers.Number):
+            return Matrix([[v * other for v in r] for r in self.a])
+        else: # dot product
+            assert isinstance(other, Matrix)
+            assert self.cols == other.rows
+            return Matrix([[sum(self.a[i][k] * other.a[k][j]
+                                for k in range(other.rows))
+                            for j in range(other.cols)]
+                           for i in range(self.rows)])
 
     def vector(self):
         assert self.cols == 1
         return [v for r in self.a for v in r]
 
+# return a 1 x N matrix of a list.
 def matrix(l):
     return Matrix([[v] for v in l])
 

@@ -30,18 +30,22 @@ def go(input):
     #
     # Equivalently,
     #
-    # x: Y(dzi - dzj) + Z(dyj - dyi) + dY(zj - zi) + dZ(yi - yj) = yi.dzi + dyj.zj - zi.dyi - yj.dzj
-    # y: Z(dxi - dxj) + X(dzj - dzi) + dZ(xj - xi) + dX(zi - zj) = zi.dxi + dzj.xj - xi.dzi - zj.dxj
-    # z: X(dyi - dyj) + Y(dxj - dxi) + dX(yj - yi) + dY(xi - xj) = xi.dyi + dxj.yj - yi.dxi - xj.dyj
+    # x: Y(dzi - dzj) + Z(dyj - dyi) + dY(zj - zi) + dZ(yi - yj)
+    #           = yi.dzi + dyj.zj - zi.dyi - yj.dzj
+    # y: Z(dxi - dxj) + X(dzj - dzi) + dZ(xj - xi) + dX(zi - zj)
+    #           = zi.dxi + dzj.xj - xi.dzi - zj.dxj
+    # z: X(dyi - dyj) + Y(dxj - dxi) + dX(yj - yi) + dY(xi - xj)
+    #           = xi.dyi + dxj.yj - yi.dxi - xj.dyj
     #
-    # These equations are linear in X,Y,Z,dX,dY,dZ. If we compute
-    # these coefficients twice for distinct i,j pairs, we can form six
+    # These equations are linear in X,Y,Z,dX,dY,dZ. So we compute
+    # these coefficients twice for distinct i,j pairs, form six
     # equations, create a matrix, and solve the set of linear
     # equations.
-    #
-    # Return three rows of coefficients and constants for randomly chosen hailstones.
 
-    hail = [(linear.Vector(x,y,z), linear.Vector(a,b,c)) for x,y,z,a,b,c in hail]
+    hail = [(linear.Vector(x,y,z), linear.Vector(a,b,c))
+            for x,y,z,a,b,c in hail]
+
+    # Return three rows of coeffs and constants for randomly chosen hailstones.
     def equations():
         ri,dri = random.choice(hail)
         while True:
@@ -66,10 +70,10 @@ def go(input):
         A = linear.Matrix(rows1 + rows2)
         C = linear.matrix(es1+es2)
         d = A.determinant()
-        if A.determinant() == 0:
+        B, d = A.inverse(divided=False)
+        if B is None:
             continue
-        B = A.inverse()
-        solution = [math.floor(x+0.5) for x in B.product(C).vector()]
+        solution = [x // d for x in (B * C).vector()]
         break
 
     R = linear.Vector(*(solution[i] for i in range(0,3)))
@@ -80,11 +84,8 @@ def go(input):
     for i,(p,v) in enumerate(hail):
         Vrel = V-v
         ts = set((p-R)[i] // Vrel[i] for i in range(3) if Vrel[i])
-        if len(ts) != 1:
-            print(p-R, Vrel, ts, [(i, (p-R)[i] // Vrel[i]) for i in range(3) if Vrel[i]], solution)
         assert len(ts) == 1
         t = list(ts)[0]
-        assert all(t * Vrel[i] == (p-R)[i] for i in range(3))
         collision = R + V * t
         assert collision == p + v * t
 
