@@ -26,9 +26,9 @@ def go(input):
     # R + t.V = ri + t.vi
     # (R-ri) = t.(vi-V)
     # (R-ri) x (V-vi) = 0
-    # R x (vi - vj) + (ri - rj) x V = ri x vi - rj x vj
+    # R x (vi - vj) + (rj - ri) x V = ri x vi - rj x vj
     #
-    # Equivalently,
+    # Equivalently, in coordinate notation:
     #
     # x: Y(dzi - dzj) + Z(dyj - dyi) + dY(zj - zi) + dZ(yi - yj)
     #           = yi.dzi + dyj.zj - zi.dyi - yj.dzj
@@ -73,6 +73,8 @@ def go(input):
         B, d = A.inverse(divided=False)
         if B is None:
             continue
+        # Avoid float loss of precision by postponing the denomimator
+        # division until the end.
         solution = [x // d for x in (B * C).vector()]
         break
 
@@ -88,4 +90,3 @@ def go(input):
         t = list(ts)[0]
         collision = R + V * t
         assert collision == p + v * t
-
