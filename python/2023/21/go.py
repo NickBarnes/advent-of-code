@@ -18,7 +18,7 @@ def unfold(grid, start, rows, cols):
                 if (ni,nj) not in grid:
                     continue
                 yield (ni,nj,nti,ntj),1
-        ranges = walk.walk((si,sj,0,0), weights)
+        ranges = graph.shortest_tree((si,sj,0,0), weights)
         # Have we reached the point of predictability?
         for i,j in grid:
             if ((ranges[(i,j,-U,-U)] != ranges[(i,j,-U+1,-U+1)] +rows+cols) or
@@ -49,7 +49,7 @@ def eliminate(grid, start):
             if (ni,nj) not in grid:
                 continue
             yield (ni,nj),1
-    ranges = walk.walk((si,sj), weights)
+    ranges = graph.shortest_tree((si,sj), weights)
     return set(ranges)
 
 def go(input):

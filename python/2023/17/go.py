@@ -25,7 +25,7 @@ def least_heat(digits, ultra=False, debug=False):
             if c != max_run: # can continue
                 dir(0,dj)
         return results
-    shortest = walk.walk((0,0,1,0,0), weights)
+    shortest = graph.shortest_tree((0,0,1,0,0), weights)
     return min(w for n,w in shortest.items()
                if n[0] == cols-1 and n[1] == rows-1
                and ((not ultra) or (n[4] >= min_run)))
