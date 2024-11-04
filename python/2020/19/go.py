@@ -22,8 +22,7 @@ def check(rules, rule, s, i):
             if not posns : # failed to match item at any possible position
                 break
         else: # all items succeeded, we are done
-            for p in posns:
-                yield p
+            yield from posns
 
 def go(input):
     # Parse input
