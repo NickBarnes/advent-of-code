@@ -42,16 +42,14 @@ def roughness(picture):
                         for dr in range(rows)
                         for dc in range(cols)
                         if at(monset,dr,dc)]
-            if (monsters):
+            if (monsters): # monsters may intersect
                 yield set((r+dr,c+dc) for r,c in monset for dr,dc in monsters)
             monster = rotate_cw(monster)
 
-    monsters = list(search(monster))
-    if not monsters:
-        monster = flip(monster)
-        monsters = list(search(monster))
-    assert monsters
-    assert len(monsters) == 1
+    monsters = list(search(monster)) + list(search(flip(monster)))
+    assert monsters # Found some monsters somewhere
+    assert len(monsters) == 1 # Monsters only found in one orientation
+    assert monsters[0].issubset(picset) # All found monsters are indeed present
 
     return len(picset)-len(monsters[0])
 
@@ -62,7 +60,7 @@ def go(input):
     # update tile and edges to reflect rotation or reflection
     def update_tile(num, tile):
         tiles[num] = tile
-        edges[num] = (# NESW
+        edges[num] = (# NESW; each edge reads clockwise.
                       tile[0],
                       ''.join(l[-1] for l in tile),
                       tile[-1][::-1],
@@ -75,7 +73,8 @@ def go(input):
         num = int(m.group(1))
         update_tile(num, tile)
 
-    # tiles_of_edge is central: a list of tile numbers for each edge.
+    # tiles_of_edge is central: a list of tile numbers for each edge,
+    # in clockwise and anti-clockwise directions.
     tiles_of_edge = defaultdict(list)
     for num,es in edges.items():
         for e in es:
