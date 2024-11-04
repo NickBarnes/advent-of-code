@@ -13,6 +13,10 @@ day-%: run.py %/go.py %/test*.txt %/input.txt
 day-%-run: run.py %/go.py %/input.txt
 	python3 run.py $*
 
+.PHONY: day-%-pypy
+day-%-pypy: run.py %/go.py %/input.txt
+	pypy3 run.py $*
+
 .PHONY: day-%-time
 day-%-time: run.py %/go.py %/input.txt
 	/usr/bin/time python3 run.py $*
