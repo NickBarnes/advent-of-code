@@ -34,21 +34,21 @@ def parse_tree(s, i=0):
         i += 1
     return ('list',l), i
 
-def eval_tree_part1(t):
+def eval_1(t):
     """Return the value of the parse tree `t` according to the rules
     of part 1 (evaluating operators in left-to-right order)."""
     if t[0] == 'int':
         return t[1]
     elif t[0] == 'list':
-        v = eval_tree_part1(t[1][0])
+        v = eval_1(t[1][0])
         for op,sub in t[1][1:]:
-            v2 = eval_tree_part1(sub)
+            v2 = eval_1(sub)
             v = v * v2 if op == '*' else v + v2
         return v
     else:
         assert False
 
-def eval_tree_part2(t):
+def eval_2(t):
     """Return the value of the parse tree `t` according to the rules
     of part 2 (addition takes precedence over multiplication)."""
     if t[0] == 'int':
@@ -58,10 +58,10 @@ def eval_tree_part2(t):
         # which is a sum t1 + ... + tn. Compute each factor as we go
         # along, and multiply when each one is complete.
         acc = 1
-        v = eval_tree_part2(t[1][0])
+        v = eval_2(t[1][0])
         rest = []
         for op,sub in t[1][1:]:
-            v2 = eval_tree_part2(sub)
+            v2 = eval_2(sub)
             if op == '+': # do additions immediately.
                 v += v2
             else:
@@ -74,5 +74,7 @@ def eval_tree_part2(t):
         assert False
 
 def go(input):
-    print(sum(eval_tree_part1(t) for line in parse.lines(input) if (t := parse_tree(line)[0])))
-    print(sum(eval_tree_part2(t) for line in parse.lines(input) if (t := parse_tree(line)[0])))
+    print("part 1 (sum when evaluating left-to-right):",
+          sum(eval_1(t) for line in parse.lines(input) if (t := parse_tree(line)[0])))
+    print("part 2 (sum when + takes precedence over *):",
+          sum(eval_2(t) for line in parse.lines(input) if (t := parse_tree(line)[0])))
