@@ -38,6 +38,6 @@ def run(cmds, dx, dy, way=False):
 def go(input):
     cmds = [(m.group(1),int(m.group(2))) for l in parse.lines(input) if (m := line_re.match(l))]
     x,y = run(cmds, 1, 0, False)
-    print(f"part 1 (using ship direction): {abs(x)+abs(y)}")
+    print("part 1 (using ship direction):", abs(x)+abs(y))
     x,y = run(cmds, 10, 1, True)
-    print(f"part 2 (using waypoint): {abs(x)+abs(y)}")
+    print("part 2 (using waypoint):", abs(x)+abs(y))

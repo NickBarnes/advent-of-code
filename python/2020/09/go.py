@@ -24,10 +24,10 @@ def go(input):
         if not is_sum(sample, data[i]):
             break
     key = data[i]
-    print(f"part 1 (first number which isn't a sum): {key}")
+    print("part 1 (first number which isn't a sum):", key)
     j,k = find_sum(data, key)
     weakness = min(data[j:k+1])+max(data[j:k+1])
-    print(f"part 2 (sum of largest and smallest in range): {weakness}")
+    print("part 2 (sum of largest and smallest in range):", weakness)
 
         
         

@@ -73,7 +73,9 @@ def occupied(grid):
 def go(input):
     grid = parse.chars(input)
     rounds, newgrid = run(grid, close, 4)
-    print(f"part 1 (counting immediate neighbours only with limit 4): {occupied(newgrid)}")
+    print("part 1 (counting immediate neighbours only with limit 4):",
+          occupied(newgrid))
     rounds, newgrid = run(grid, seen, 5)
-    print(f"part 2 (counting visible seats with limit 5): {occupied(newgrid)}")
+    print("part 2 (counting visible seats with limit 5):",
+          occupied(newgrid))
     

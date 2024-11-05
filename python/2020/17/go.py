@@ -64,10 +64,10 @@ def go(input):
     active = init
     for i in range(6):
         active = set(generate(active, neighbours3))
-    print("part 1 (active cells after 6 3D generations.", len(active))
+    print("part 1 (active cells after 6 3D generations):", len(active))
 
     active = set((x,y,z,0) for (x,y,z) in init)
     for i in range(6):
         active = set(generate(active, neighbours4))
-    print("part 2 (active cells after 6 4D generations.", len(active))
+    print("part 2 (active cells after 6 4D generations):", len(active))
         

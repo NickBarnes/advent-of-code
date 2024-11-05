@@ -69,7 +69,7 @@ def go(input):
     for g in groups:
         for a,v in g.part1():
             mem[a] = v
-    print("part 1:", sum(mem.values()))
+    print("part 1 (total when masking values):", sum(mem.values()))
 
     if max(g.mask.count('X') for g in groups) < 20:
         # skip second part for first test when the mask is mostly Xs.
@@ -77,4 +77,4 @@ def go(input):
         for g in groups:
             for a,v in g.part2():
                 mem[a] = v
-        print("part 2:", sum(mem.values()))
+        print("part 2 (total when masking addresses):", sum(mem.values()))

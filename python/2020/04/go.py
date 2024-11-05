@@ -1,6 +1,3 @@
-# Template for AoC daily solution. To add to imports, see
-# util/__init__.py.
-
 yr_re = re.compile('^[0-9]{4}$')
 
 def valid_birth_year(s):
@@ -60,7 +57,7 @@ def go(input):
             good_keys += 1
             if all(k == 'cid' or validators[k](v) for k,v in d.items()):
                 valid += 1
-    print(f"part 1: {good_keys} valid")
-    print(f"part 2: {valid} valid")
+    print("part 1 (passports with all required fields):", good_keys)
+    print("part 2 (passports with all items valid):", valid)
     
     

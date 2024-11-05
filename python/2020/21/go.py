@@ -20,8 +20,6 @@ def go(input):
     # in the ingredients list for every food that warns of it.
     suspects = {a: set.intersection(*warns[a])
                 for a in warns.keys()}
-    if len(foods) < 10:
-        print(suspects)
     # So this is the set of all suspect ingredients
     all_suspects = set.union(*suspects.values())
 
@@ -39,13 +37,12 @@ def go(input):
     while suspects:
         new_toxins = {a: list(il)[0] for a,il in suspects.items() if len(il) == 1}
         for a,t in new_toxins.items():
-            toxic.append((a,t))
-            print(f"{t} contains {a}")
+            toxic.append((a,t)) # `t` contains `a`
             del suspects[a]
             for a in suspects:
                 if t in suspects[a]:
                     suspects[a].remove(t)
 
-    # "alphabetlcally by their allergen"
+    # "alphabetically by their allergen"
     print("part 2 (dangerous ingredients list):",
           ','.join(t[1] for t in sorted(toxic)))

@@ -62,7 +62,7 @@ def go(input):
     player1 = [int(l) for l in sections[0][1:]]
     player2 = [int(l) for l in sections[1][1:]]
     id, winner = combat(player1, player2)
-    print(score(winner))
+    print("part 1 (regular combat):", score(winner))
 
     id, winner = recursive_combat(player1, player2)
-    print(score(winner))
+    print("part 2 (recursive combat):", score(winner))

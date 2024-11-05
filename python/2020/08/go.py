@@ -1,5 +1,4 @@
 insn_re = re.compile('^(acc|nop|jmp) ([+-][0-9]+)$')
-# util/__init__.py.
 
 def run(code, pc=1, acc=0, visited=set(), flex=False):
     visited = visited.copy()
@@ -33,7 +32,7 @@ def run(code, pc=1, acc=0, visited=set(), flex=False):
 def go(input):
     code = [(m.group(1), int(m.group(2))) for l in parse.lines(input) if (m := insn_re.match(l))]
     terminate, acc = run(code, flex=False)
-    print(f"part 1 (without changes) {terminate}: {acc}")
+    print("part 1 (without changes)", terminate, "at", acc)
 
     terminate, acc = run(code, flex=True)
-    print(f"part 2 (with a change) {terminate}: {acc}")
+    print("part 2 (with a change)", terminate, "at", acc)

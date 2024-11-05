@@ -74,5 +74,3 @@ def go(input):
               misc.prod(v
                         for k,v in your_ticket.items()
                         if k.startswith('departure ')))
-    
-    
