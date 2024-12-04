@@ -5,15 +5,16 @@ import os
 
 if __name__ == '__main__':
     testing = '-t' in sys.argv[1:]
-    for d in sys.argv[1:]:
-        if d == '-t':
+    dir = os.path.dirname(os.path.realpath(__file__))
+    for day in sys.argv[1:]:
+        if day == '-t':
             continue
         
         if testing:
-            files = sorted(glob.glob(f"{d}/test*.txt"))
+            files = sorted(glob.glob(f"{dir}/{day}/test*.txt"))
         else:
-            files = glob.glob(f"../inputs/{d}.txt")
-        src = f"{d}/go.py"
+            files = glob.glob(f"input/{day}.txt")
+        src = f"{dir}/{day}/go.py"
         py = open(src).read()
         code = compile(py, src, 'exec')
         exec(code, globals())
