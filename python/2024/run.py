@@ -12,7 +12,7 @@ if __name__ == '__main__':
         if testing:
             files = sorted(glob.glob(f"{d}/test*.txt"))
         else:
-            files = glob.glob(f"{d}/input.txt")
+            files = glob.glob(f"../inputs/{d}.txt")
         src = f"{d}/go.py"
         py = open(src).read()
         code = compile(py, src, 'exec')
