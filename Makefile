@@ -1,34 +1,34 @@
-.PHONY: py-all
-py-all: $(foreach dir,$(sort $(patsubst python/%,%,$(wildcard python/[012]*))),py-day-$(dir)-run)
+.PHONY: py
+py: $(foreach day,$(sort $(patsubst python/%,%,$(wildcard python/[012]*))),py-$(day)-run)
 
 .PHONY: pypy
-pypy: $(foreach dir,$(sort $(patsubst python/%,%,$(wildcard python/[012]*))),py-day-$(dir)-pypy)
+pypy: $(foreach day,$(sort $(patsubst python/%,%,$(wildcard python/[012]*))),pypy-$(day))
 
 .PHONY: py-time
-py-time: $(foreach dir,$(sort $(patsubst python/%,%,$(wildcard python/[012]*))),py-day-$(dir)-time)
+py-time: $(foreach day,$(sort $(patsubst python/%,%,$(wildcard python/[012]*))),py-$(day)-time)
 
 .PHONY: pypy-time
-pypy-time: $(foreach dir,$(sort $(patsubst python/%,%,$(wildcard python/[012]*))),pypy-day-$(dir)-time)
+pypy-time: $(foreach day,$(sort $(patsubst python/%,%,$(wildcard python/[012]*))),pypy-$(day)-time)
 
-.PHONY: py-day-%
-py-day-%: python/run.py python/%/go.py test/%*.txt input/%.txt
+.PHONY: py-%
+py-%: python/run.py python/%/go.py test/%*.txt input/%.txt
 	/usr/bin/time python3 python/run.py -t $*
 	/usr/bin/time python3 python/run.py $*
 
-.PHONY: py-day-%-run
-py-day-%-run: python/run.py python/%/go.py input/%.txt
+.PHONY: py-%-run
+py-%-run: python/run.py python/%/go.py input/%.txt
 	python3 python/run.py $*
 
-.PHONY: pypy-day-%
-pypy-day-%: python/run.py python/%/go.py input/%.txt
+.PHONY: pypy-%
+pypy-%: python/run.py python/%/go.py input/%.txt
 	pypy3 python/run.py $*
 
-.PHONY: py-day-%-time
-py-day-%-time: python/run.py python/%/go.py input/%.txt
+.PHONY: py-%-time
+py-%-time: python/run.py python/%/go.py input/%.txt
 	/usr/bin/time python3 python/run.py $*
 
-.PHONY: pypy-day-%-time
-pypy-day-%-time: python/run.py python/%/go.py input/%.txt
+.PHONY: pypy-%-time
+pypy-%-time: python/run.py python/%/go.py input/%.txt
 	/usr/bin/time pypy3 python/run.py $*
 
 .PHONY: clean

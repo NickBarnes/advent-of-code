@@ -1,3 +1,7 @@
+# Simple driver script for Advent of Code instances. Invoke with day
+# numbers on the command line. If given "-t" anywhere on the command
+# line, all test inputs will be run instead of the main puzzle input.
+
 from util import *
 import sys
 import glob
