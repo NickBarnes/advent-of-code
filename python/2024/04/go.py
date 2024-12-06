@@ -44,5 +44,5 @@ def crosses(grid, s):
     
 def go(input):
     grid = parse.lines(input)
-    print(count(grid,'XMAS'))
-    print(crosses(grid,'MAS'))
+    print("part 1 (XMASes found):", count(grid,'XMAS'))
+    print("part 2 (X MASes found):", crosses(grid,'MAS'))
