@@ -11,7 +11,7 @@ if __name__ == '__main__':
             continue
         
         if testing:
-            files = sorted(glob.glob(f"{dir}/{day}/test*.txt"))
+            files = sorted(glob.glob(f"test/{day}*.txt"))
         else:
             files = glob.glob(f"input/{day}.txt")
         src = f"{dir}/{day}/go.py"

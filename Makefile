@@ -11,7 +11,7 @@ py-time: $(foreach dir,$(sort $(patsubst python/%,%,$(wildcard python/[012]*))),
 pypy-time: $(foreach dir,$(sort $(patsubst python/%,%,$(wildcard python/[012]*))),pypy-day-$(dir)-time)
 
 .PHONY: py-day-%
-py-day-%: python/run.py python/%/go.py python/%/test*.txt input/%.txt
+py-day-%: python/run.py python/%/go.py test/%*.txt input/%.txt
 	/usr/bin/time python3 python/run.py -t $*
 	/usr/bin/time python3 python/run.py $*
 
