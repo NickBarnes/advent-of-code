@@ -1,22 +1,3 @@
-import sys
-
-input='bingo.txt'
-if len(sys.argv) > 1:
-    input = sys.argv[1]
-
-f = open(input,'r')
-
-calls = [int(s) for s in f.readline().strip().split(',')]
-print(f"{len(calls)} calls")
-
-lines = f.readlines()
-
-def board_end(lines):
-    for i in range(len(lines)):
-        if not lines[i].strip():
-            return i
-    return len(lines)
-
 class Board:
     def __init__(self, lines, n):
         self._boardno = n
@@ -44,25 +25,23 @@ class Board:
                 if self._rowsleft[j] == 0 or self._colsleft[i] == 0:
                     self._won = True
                     return self._unmarked * n
-
-boards = []
-while lines:
-    e = board_end(lines)
-    if e > 0:
-        boards.append(Board(lines[0:e], len(boards)))
-    lines = lines[e+1:]
-print(f"{len(boards)} boards")
-
-def play():
-    lastwon = None
-    for i,c in enumerate(calls):
-        for bn,b in enumerate(boards):
-            if (r := b.call(c)) is not None:
-                if lastwon is None:
-                    print(f"first win call {i}:{c} board {bn} answer 1 {r}")
-                lastwon = (i, c, bn, r)
-    i,c,bn,r = lastwon
-    print(f"last win call {i}:{c} board {bn} answer 2 {r}")
-
-play()
+    
+def go(input):
+    boards = parse.sections(input)
+    assert len(boards[0]) == 1
+    calls = [int(s) for s in boards[0][0].split(',')]
+    boards = [Board(b, i) for i,b in enumerate(boards[1:])]
+    
+    def play():
+        lastwon = None
+        for i,c in enumerate(calls):
+            for bn,b in enumerate(boards):
+                if (r := b.call(c)) is not None:
+                    if lastwon is None:
+                        print(f"part 1 (final score of first winning board): {r}")
+                    lastwon = (i, c, bn, r)
+        i,c,bn,r = lastwon
+        print(f"part 2 (final score of last winning board): {r}")
+    
+    play()
 

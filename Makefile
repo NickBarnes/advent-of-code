@@ -33,6 +33,5 @@ pypy-%-time: python/run.py python/%/go.py input/%.txt
 
 .PHONY: clean
 clean:
-	rm -rf *~ */*~ */*/*~ */__pycache__ */*/__pycache__
-
-
+	find . -name '*~' -print0 | xargs -0 rm
+	rm -rf */__pycache__ */*/__pycache__

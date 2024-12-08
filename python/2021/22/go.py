@@ -1,13 +1,4 @@
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'util'))
-
-import walk
-import file
-
-import re
-
-line_re = re.compile("(on|off) x=(-?[0-9]+)\.\.(-?[0-9]+),y=(-?[0-9]+)\.\.(-?[0-9]+),z=(-?[0-9]+)\.\.(-?[0-9]+)")
+line_re = re.compile(r"(on|off) x=(-?[0-9]+)\.\.(-?[0-9]+),y=(-?[0-9]+)\.\.(-?[0-9]+),z=(-?[0-9]+)\.\.(-?[0-9]+)")
 
 def reduce(orders, X1,X2,Y1,Y2,Z1,Z2):
     # reduce a set of orders to ones which apply within the X1...Z2 cuboid.
@@ -78,14 +69,10 @@ def process(orders):
         total += xl[i]*yl[j]*zl[k]
     return total
     
-def go(filename):
-    print(f"results from {filename}:")
-    lines = [line_re.match(l).groups() for l in file.lines(filename)]
+def go(input):
+    lines = [line_re.match(l).groups() for l in parse.lines(input)]
     orders = [(l[0] == 'on', *map(int,l[1:])) for l in lines]
     reduced = reduce(orders,-50,50,-50,50,-50,50)
-    print(f"After initialization, {process(reduced)} cubes are on (answer one)")
-    print(f"After full reboot, {process(orders)} cubes are on (answer two)")
+    print(f"part 1 (cubes on after initialization): {process(reduced)}")
+    print(f"part 2 (cubes on after full reboot): {process(orders)}")
 
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)

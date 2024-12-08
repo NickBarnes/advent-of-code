@@ -1,10 +1,3 @@
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'util'))
-
-import walk
-import file
-
 # destination columns
 
 col = {'A': 3,
@@ -20,7 +13,7 @@ cost = {'A': 1,
 }
 
 def solve(puzzle):
-    grid = [l for l in puzzle.split('\n') if l.strip()]
+    grid = [l.rstrip() for l in puzzle.rstrip().split('\n')] # keep left spaces
     homes = {}
     for c in 'ABCD':
         homes[c] = [row[col[c]] for row in grid[2:-1]]
@@ -104,13 +97,8 @@ def solve(puzzle):
 
     return best((homes,top))
 
-def go(filename):
-    print(f"results from {filename}:")
-    puzzles = open(filename, 'r').read().split('\n\n')
+def go(input):
+    puzzles = input.split('\n\n')
     for i, puzzle in enumerate(puzzles, start=1):
         cost = solve(puzzle)
-        print(f"Lowest cost solution for puzzle {i}: {cost}")
-
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)
+        print(f"part {i} (lowest cost solution for puzzle {i}): {cost}")

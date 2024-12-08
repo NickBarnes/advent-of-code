@@ -1,10 +1,6 @@
 import sys
 import functools
 
-input='input.txt'
-if len(sys.argv) > 1:
-    input = sys.argv[1]
-
 # Python made this one really easy with bignums
 
 class Bits:
@@ -94,7 +90,8 @@ class Packet:
                 self._packets.append(packet)
                 bits -= packet.len()
 
-for l in open(input,'r'):
-    l = l.strip()
-    packet = Packet(s=l)
-    print(f"{l[:10]}... ({len(l)}) : total versions {packet.total_versions()}, value {packet.value()}")
+def go(input):
+    for l in parse.lines(input):
+        packet = Packet(s=l)
+        print(f"part 1 (total packet versions): {packet.total_versions()}")
+        print(f"part 2 (expression value): {packet.value()}")
