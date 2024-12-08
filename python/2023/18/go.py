@@ -1,4 +1,4 @@
-line_re = re.compile('([UDLR]) ([0-9]+) \(#([0-9a-f]{6})\)')
+line_re = re.compile(r'([UDLR]) ([0-9]+) \(#([0-9a-f]{6})\)')
 
 dirs = {'L':(-1,0),
         'R':(1,0),

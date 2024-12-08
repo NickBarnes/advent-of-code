@@ -1,13 +1,5 @@
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'util'))
-
-import walk
-import file
-
-def go(filename):
-    print(f"results from {filename}:")
-    lines = file.lines(filename)
+def go(input):
+    lines = parse.lines(input)
     cubes=set(tuple(map(int,l.split(','))) for l in lines)
     d = [(1,0,0),(-1,0,0),(0,1,0),(0,-1,0),(0,0,1),(0,0,-1)]
 
@@ -58,14 +50,9 @@ def go(filename):
                     if not (x,y,z) in cubes and not escape(x,y,z):
                         cubes.add((x,y,z))
 
-    print(f"answer one (surface area): {surface()}")
+    print(f"part 1 (surface area): {surface()}")
 
     # Now fill in all trapped cells
     fill()
     print(f"  Found {len(escaping)} escaping cells and {len(trapped)} trapped cells")
-    print(f"answer two (exposed surface area): {surface()}")
-
-
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)
+    print(f"part 2 (exposed surface area): {surface()}")

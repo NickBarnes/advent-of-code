@@ -1,6 +1,4 @@
-import boiler
-import re
-
+# Sample "Monkey" section:
 # Monkey 1:
 #   Starting items: 54, 65, 75, 74
 #   Operation: new = old + 6
@@ -46,16 +44,12 @@ class Monkey:
             monkeys[self.if_true if (newitem % self.divisor) == 0 else self.if_false].items.append(newitem)
             self.items = []
 
-def read(filename):
+def action(sections, rounds, relief):
     global monkeys, bigmod
     monkeys = {}
     bigmod = 1
-    for s in boiler.sections(filename):
+    for s in sections:
         bigmod *= Monkey(s).divisor
-
-def action(filename, rounds, relief):
-    global monkeys
-    read(filename)
     for r in range(rounds):
         for k in range(len(monkeys)):
             monkeys[k].go(relief)
@@ -63,16 +57,12 @@ def action(filename, rounds, relief):
 def business(k, tag):
     final = sorted(monkeys.values(), key=lambda m: m.inspections)
     business = final[-1].inspections * final[-2].inspections
-    print(f"monkey business {tag} (answer {k}) {business}")
+    print(f"part {k} (monkey business {tag}): {business}")
 
-def go(filename):
-    print(f"results from {filename}:")
-    action(filename, 20, True)
-    business("one", "after 20 rounds with relief")
+def go(input):
+    sections = parse.sections(input)
+    action(sections, 20, True)
+    business(1, "after 20 rounds with relief")
 
-    action(filename, 10000, False)
-    business("two", "after 10,000 rounds with no relief")
-
-if __name__ == '__main__':
-    for f in boiler.files():
-        go(f)
+    action(sections, 10000, False)
+    business(2, "after 10,000 rounds with no relief")

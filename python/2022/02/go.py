@@ -1,89 +1,41 @@
-from enum import Enum
+# Rock, Paper, Scissors. We play `a`, opponent plays `b`, outcome is
+# `o`.
 
-# rock paper scissors. Wow, this was horrible.
+# If we say R=0, P=1, S=2, W=1, L=2, D=0, then we have this handy
+# modular arithmetic: o = a-b (mod 3)
 
-Play = Enum('Play', ['Rock', 'Paper', 'Scissors'])
-Outcome = Enum('Outcome', ['Win', 'Draw', 'Lose'])
-R = Play.Rock
-P = Play.Paper
-S = Play.Scissors
-W = Outcome.Win
-D = Outcome.Draw
-L = Outcome.Lose
 
-# What's the outcome of a game?
-result = {(R,R): D,
-          (R,P): L,
-          (R,S): W,
-          (P,R): W,
-          (P,P): D,
-          (P,S): L,
-          (S,R): L,
-          (S,P): W,
-          (S,S): D,
-}
+# if we play `a` and the opponent plays `b`, what's the outcome `o`?
+def outcome(a,b): return (a-b) % 3
 
-# Given an opponent's play, and a desired outcome, what play should I make?
-choose = {(R,W): P,
-          (R,D): R,
-          (R,L): S,
-          (P,W): S,
-          (P,D): P,
-          (P,L): R,
-          (S,W): R,
-          (S,D): S,
-          (S,L): P,
-}
+# if the opponent plays `b` and we want outcome `o`, what should we play?
+def choose(b,o): return (o+b) % 3
 
-# Each shape has a score, because of course it does.
-shape_score = {R: 1,
-               P: 2,
-               S: 3,
-}
+# Weird scoring rules
+def shape_score(a): return a+1
+def outcome_score(a, b): return (outcome(a,b) * 3 + 3) % 9
 
-result_score = {L: 0,
-                D: 3,
-                W: 6,
-}
+def score(a, b):
+    return outcome_score(a, b) + shape_score(a)
 
-opponent = {'A': R,
-            'B': P,
-            'C': S
-}
+# in both parts 1 and 2, A/B/C indicates R/P/S of the opponent
+def opponent(c): return 'ABC'.index(c)
 
 # in part 1, we think that X/Y/Z indicates R/P/S
-response_A = {'X': R,
-              'Y': P,
-              'Z': S,
-}
+def xyz_play(c): return 'XYZ'.index(c)
 
 # in part 2, we discover that X/Y/Z actually indicates L/D/W
-response_B = {'X': L,
-              'Y': D,
-              'Z': W,
-}
+def xyz_outcome(c): return ('XYZ'.index(c) - 1) % 3
 
-def round_score(play, other):
-    return result_score[result[(play, other)]] + shape_score[play]
+def go(input):
+    written = [l.split() for l in parse.lines(input)]
 
-def go(filename):
-    print(f"results from {filename}:")
-    written = [l.strip().split() for l in open(filename,'r')]
+    # each game is b,a for consistency with part 2 (where that's easier)
+    games_1 = ((opponent(x), xyz_play(y)) for x,y in written)
+    score_1 = sum(score(a,b) for b,a in games_1)
+    print(f"part 1 (total score 1): {score_1}")
 
-    strategy_A = [(opponent[o], response_A[r]) for o,r in written]
-    scores_A = [round_score(r,o) for (o,r) in strategy_A]
-    print(f"total score A (answer one) {sum(scores_A)}")
-
-    strategy_B = [(o,choose[(o,res)]) for a,b in written
-                  if (o := opponent[a])
-                  if (res := response_B[b])]
-    scores_B = [round_score(r,o) for (o,r) in strategy_B]
-    print(f"total score B (answer two) {sum(scores_B)}")
-
-# Daily boilerplate for applying 'go' to files on the command-line.
-
-import sys
-
-if len(sys.argv) > 1:
-    for arg in sys.argv[1:]:
-        go(arg)
+    # each game is b,a (because that's easier in this walrusy comprehension)
+    games_2 = ((b := opponent(x), choose(b, xyz_outcome(y))) for x,y in written)
+    score_2 = sum(score(a,b) for b,a in games_2)
+    print(f"part 2 (total score 2): {score_2}")

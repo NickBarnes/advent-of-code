@@ -1,4 +1,4 @@
-node_re = re.compile('([1-9A-Z]{3}) = \(([1-9A-Z]{3}), ([1-9A-Z]{3})\)')
+node_re = re.compile(r'([1-9A-Z]{3}) = \(([1-9A-Z]{3}), ([1-9A-Z]{3})\)')
 
 class Node:
     def __init__(self, l):

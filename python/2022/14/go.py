@@ -1,10 +1,3 @@
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'util'))
-
-import walk
-import file
-
 # Visualisation. Just ignore everything with `if pil`.
 try:
     from PIL import Image, ImageColor
@@ -12,9 +5,8 @@ try:
 except:
     pil = False
 
-def go(filename):
-    print(f"results from {filename}:")
-    lines = file.lines(filename)
+def go(input):
+    lines = parse.lines(input)
     points = [[(int(p[0]),int(p[1])) for item in line.split(' -> ') if (p := item.split(','))] for line in lines]
     pairs = [(l[i],l[i+1]) for l in points for i in range(len(l)-1)]
     points = [p for pair in pairs for p in pair]
@@ -97,7 +89,7 @@ def go(filename):
         while True:
             if sy >= ymax:
                 if not overflow:
-                    print(f"sand falls off bottom after {sand}")
+                    print(f"part 1 (time at which sand falls off bottom): {sand}")
                     overflow = True
                     snapshot('floor')
                     skip = 100 # how often do we want a frame now?
@@ -115,7 +107,7 @@ def go(filename):
                     frame()
                 sand += 1
                 if sy == 0 and sx == 500:
-                    print(f"sand fills up infinite void after {sand}")
+                    print(f"part 2 (time at which sand fills up non-infinite void): {sand}")
                     running = False
                 break
 
@@ -125,8 +117,4 @@ def go(filename):
     # convert frames to a movie
     if pil:
         scale = 1000 // im.size[0]
-        os.system(f"ffmpeg -r 30 -i frames/%05d.png -vf 'scale={im.size[0]*scale}:{im.size[1]*scale}' -c:v libx264 -profile:v baseline -tune animation -pix_fmt yuv420p {filename}.mp4")
-
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)
+        os.system(f"ffmpeg -r 30 -i frames/%05d.png -vf 'scale={im.size[0]*scale}:{im.size[1]*scale}' -c:v libx264 -profile:v baseline -tune animation -pix_fmt yuv420p movie.mp4")

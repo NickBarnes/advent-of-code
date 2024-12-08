@@ -1,6 +1,7 @@
 /* I was terribly slow to write some interval arithmetic code so I
  * wrote this C code to brute-force part 2 of day 5. go.py has a much
- * quicker and more pleasant solution using interval arithmetic. */
+ * quicker and more pleasant solution using interval arithmetic. I've
+ * kept this code for the record. */
 
 #include <stdio.h>
 #include <inttypes.h>

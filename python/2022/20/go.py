@@ -1,10 +1,3 @@
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'util'))
-
-import walk
-import file
-
 class Node:
     def __init__(self, v, k):
         self.val = v * k
@@ -37,8 +30,8 @@ class Node:
         self.prev = x
         x.next = self
         
-def go(filename):
-    print(f"results from {filename}:")
+def go(input):
+    lines = parse.lines(input)
 
     def link(nodes):
         for i in range(len(nodes) - 1):
@@ -61,22 +54,18 @@ def go(filename):
         return s
 
     # part 1
-    nodes = [Node(int(l), 1) for l in file.lines(filename)]
+    nodes = [Node(int(l), 1) for l in lines]
     link(nodes)
     mix(nodes)
     s = coords(nodes)
-    print(f"sum of grove coordinates after mixing once without a key (answer one): {s}")
+    print(f"part 1 (sum of grove coordinates after mixing once without a key): {s}")
 
     # part 2
     key = 811589153
-    nodes = [Node(int(l), key) for l in file.lines(filename)]
+    nodes = [Node(int(l), key) for l in lines]
     link(nodes)
 
     for _ in range(10):
         mix(nodes)
     s = coords(nodes)
-    print(f"sum of grove coordinates after mixing ten times with a key (answer two): {s}")
-
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)
+    print(f"part 2 (sum of grove coordinates after mixing ten times with a key): {s}")

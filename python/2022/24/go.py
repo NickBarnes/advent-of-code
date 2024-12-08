@@ -1,19 +1,11 @@
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'util'))
-
-import walk
-import file
-
 directions = {'>': (0,1),
              '<': (0,-1),
              '^': (-1,0),
              'v': (1,0),
 }
 
-def go(filename):
-    print(f"results from {filename}:")
-    map = file.chars(filename)
+def go(input):
+    map = parse.chars(input)
     rows = len(map)
     cols = len(map[0])
     assert all(len(r) == cols for r in map)
@@ -83,17 +75,13 @@ def go(filename):
                 show()
 
     find(start, end)
-    print(f"First arrive at end at time {time} (answer one):")
+    print(f"part 1 (first arrival time at end): {time}:")
     show()
 
     find(end, start)
-    print(f"First arrive back at start at time {time}:")
+    print(f"First arrival back at start at time {time}:")
     show()
 
     find(start, end)
-    print(f"Finally arrive back at the end at time {time} (answer two):")
+    print(f"part 2 (final arrival time back at the end): {time}:")
     show()
-
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)

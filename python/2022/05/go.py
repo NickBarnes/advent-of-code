@@ -3,9 +3,8 @@
 import re
 move_re = re.compile('move ([0-9]+) from ([0-9]+) to ([0-9]+)')
 
-def go(filename):
-    print(f"results from {filename}:")
-    stacks, moves = open(filename,'r').read().split('\n\n')
+def go(input):
+    stacks, moves = input.split('\n\n')
 
     # for each stack, go backwards through the stack lines getting the crate characters,
     # then strip to remove the spaces.
@@ -26,26 +25,18 @@ def go(filename):
         crates[a-1] = crates[a-1][:-n]
     
     # report the set of top crates
-    def done(desc):
+    def done(part, desc):
         top_crates = ''.join(crate[-1] for crate in crates)
-        print(f"    {desc}: {top_crates}")
+        print(f"part {part} ({desc}): {top_crates}")
 
     # part 1: move one crate at at time
     for n,a,b in moves:
         for i in range(n):
             move(a,b,1)
-    done("one crate at a time")
+    done(1, "one crate at a time")
 
     crates = crates_copy
     # part 2: move n crates at at time
     for n,a,b in moves:
         move(a,b,n)
-    done("N crates at a time")
-
-# daily boilerplate for applying 'go' to files on the command-line.
-
-import sys
-
-if len(sys.argv) > 1:
-    for arg in sys.argv[1:]:
-        go(arg)
+    done(2, "N crates at a time")

@@ -8,21 +8,12 @@ def contain(r1,r2):
 def overlap(r1,r2):
     return r1[0] <= r2[1] and r2[0] <= r1[1]
 
-def go(filename):
-    print(f"results from {filename}:")
-    ranges = [l.strip().split(',') for l in open(filename,'r')]
+def go(input):
+    ranges = [l.split(',') for l in parse.lines(input)]
     values = [[(int(s[0]),int(s[1])) for r in l if (s := r.split('-'))] for l in ranges]
 
     c1 = sum(1 for v in values if contain(*v) or contain(*reversed(v)))
-    print(f"pairs wholly overlap (answer one) {c1}")
+    print(f"part 1 (pairs wholly overlap): {c1}")
 
     c2 = sum(1 for v in values if overlap(*v))
-    print(f"pairs partly overlap (answer two) {c2}")
-
-# daily boilerplate for applying 'go' to files on the command-line.
-
-import sys
-
-if len(sys.argv) > 1:
-    for arg in sys.argv[1:]:
-        go(arg)
+    print(f"part 2 (pairs partly overlap): {c2}")

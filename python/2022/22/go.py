@@ -1,11 +1,3 @@
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'util'))
-
-import walk
-import file
-
-import re
 dir_re = re.compile('([0-9]*)([LR])')
 
 compass = [(1,0),(0,1),(-1,0),(0,-1)]
@@ -134,11 +126,10 @@ def trace(map, wrap, directions):
         facing = (facing + turn) % len(compass)
     return y,x,facing
 
-def go(filename):
-    print(f"results from {filename}:")
-    lines = list(open(filename,'r'))
+def go(input):
+    lines = [l for l in input.split('\n') if l]
     dirs = lines[-1]
-    map = [l[:-1] for l in lines[:-2]]
+    map = lines[:-1]
     directions = []
     while m := dir_re.match(dirs):
         dirs = dirs[m.end():]
@@ -148,7 +139,7 @@ def go(filename):
     wrap = rect_wrap(map)
     y,x,facing = trace(map, wrap, directions)
     rect_grove = 1000 * (y+1) + 4 * (x+1) + facing
-    print(f"Grove location on rectangular map (answer one): {rect_grove}")
+    print(f"part 1 (grove location on rectangular map): {rect_grove}")
     
     nonblank = sum(1 for l in map for c in l if c != ' ')
     assert nonblank % 6 == 0
@@ -165,9 +156,4 @@ def go(filename):
     check_wrap(map, wrap)
     y,x,facing = trace(map, wrap, directions)
     cube_grove = 1000 * (y+1) + 4 * (x+1) + facing
-    print(f"Grove location on cuboidal map (answer two): {cube_grove}")
-
-
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)
+    print(f"part 2 (grove location on cuboidal map): {cube_grove}")

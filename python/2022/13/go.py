@@ -1,9 +1,3 @@
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'util'))
-
-import walk
-import file
 import functools
 
 # This works but feels like cheating. Also I'm really not keen on
@@ -59,9 +53,8 @@ def compare(a,b):
     # recurse down both lists
     return compare(a[0],b[0]) or compare(a[1:],b[1:])
 
-def go(filename):
-    print(f"results from {filename}:")
-    sections = [(make_list(s[0]), make_list(s[1])) for s in file.sections(filename)]
+def go(input):
+    sections = [(make_list(s[0]), make_list(s[1])) for s in parse.sections(input)]
 
     right_order_count = sum(i for i,s in enumerate(sections,start=1) if compare(s[0],s[1]) == -1)
 
@@ -70,9 +63,5 @@ def go(filename):
     d1 = next(i for i,p in enumerate(packets, start=1) if compare(p,[[2]]) == 0)
     d2 = next(i for i,p in enumerate(packets, start=1) if compare(p,[[6]]) == 0)
 
-    print(f"product of indexes of pairs in right order (answer one): {right_order_count}")
-    print(f"decoder key (answer two): {d1*d2}")
-
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)
+    print(f"part 1 (product of indexes of pairs in right order): {right_order_count}")
+    print(f"part 2 (decoder key): {d1*d2}")

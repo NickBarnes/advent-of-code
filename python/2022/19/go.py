@@ -1,11 +1,3 @@
-import sys
-import os
-import re
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'util'))
-
-import walk
-import file
-
 materials = 'ore clay obsidian geode'.split()
 GEODE=3
 
@@ -80,24 +72,19 @@ class Blueprint:
 
     def geodes(self, time):
         geodes = self.geodes_(time, [0,0,0,0], [1,0,0,0])
-        print(f"Blueprint {self.id} gets {geodes} in {time} with cache size {len(self.cache)} and {self.hits} hits")
+        # print(f"Blueprint {self.id} gets {geodes} in {time} with cache size {len(self.cache)} and {self.hits} hits")
         return geodes
 
     def quality(self, time):
         geodes = self.geodes(time)
         return self.id * geodes
 
-def go(filename):
-    print(f"results from {filename}:")
-    blueprints = [Blueprint(bp.strip().split('.')) for bp in open(filename,'r').read().split('Blueprint ') if bp.strip()]
+def go(input):
+    blueprints = [Blueprint(bp.strip().split('.')) for bp in input.split('Blueprint ') if bp.strip()]
     answer_one = sum(b.quality(24) for b in blueprints)
-    print(f"total quality in 24 minutes with all blueprints: {answer_one}")
+    print(f"part 1 (total quality in 24 minutes with all blueprints): {answer_one}")
     answer_two = 1
     for b in blueprints:
         if b.id < 4:
             answer_two *= b.geodes(32)
-    print(f"product of geodes counts in 32 minutes from first three blueprints: {answer_two}")
-
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)
+    print(f"part 2 (product of geodes counts in 32 minutes from first three blueprints): {answer_two}")

@@ -26,18 +26,9 @@ def follow(lines, len):
             visited.add((rope[-1][0],rope[-1][1]))
     return visited
 
-def go(filename):
-    print(f"results from {filename}:")
-    lines = [l.strip().split() for l in open(filename,'r')]
+def go(input):
+    lines = parse.words(input)
     short_visits = follow(lines, 2)
-    print(f"Unique locations visited by a short rope's tail (answer one): {len(short_visits)}")
+    print(f"part 1 (unique locations visited by a short rope's tail): {len(short_visits)}")
     long_visits = follow(lines, 10)
-    print(f"Unique locations visited by a long rope's tail (answer one): {len(long_visits)}")
-
-# daily boilerplate for applying 'go' to files on the command-line.
-
-import sys
-
-if len(sys.argv) > 1:
-    for arg in sys.argv[1:]:
-        go(arg)
+    print(f"part 2 (unique locations visited by a long rope's tail): {len(long_visits)}")

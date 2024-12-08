@@ -1,18 +1,8 @@
-# Day 15
-
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'util'))
-
-import walk
-import file
-import re
 line_re = re.compile('Sensor at x=(-?[0-9]+), y=(-?[0-9]+): closest beacon is at x=(-?[0-9]+), y=(-?[0-9]+)')
 
-
-def go(filename):
-    print(f"results from {filename}:")
-    lines = file.lines(filename)
+def go(input):
+    lines = parse.lines(input)
+    test = len(lines) > 20
     input = (map(int,line_re.match(line).groups()) for line in lines)
 
     def dist(x1,y1,x2,y2): return abs(x1-x2)+abs(y1-y2)
@@ -43,13 +33,13 @@ def go(filename):
         return blocked, beacons
 
     # part 1:
-    testy = 10 if 'test' in filename else 2000000
+    testy = 10 if test else 2000000
     blocked, beacons = testline(testy)
     blocked_cells = sum(b[1]-b[0]+1 for b in blocked) - len(beacons)
-    print(f"Blocked cells on line {testy} (answer one): {blocked_cells}")
+    print(f"part 1 (blocked cells on line {testy}): {blocked_cells}")
 
     # part 2
-    xmax, ymax = (20,20) if 'test' in filename else (4000000, 4000000)
+    xmax, ymax = (20,20) if test else (4000000, 4000000)
 
     def part2_1():
         # Attempt 1.
@@ -124,12 +114,8 @@ def go(filename):
                     return int(x),int(y)
 
     x,y = part2_3()
-    print(f"answer two (distress beacon at {x},{y}): {x*4000000 + y}")
+    print(f"part 2 (distress beacon at {x},{y}): {x*4000000 + y}")
     # x,y = part2_1()
     # print(f"answer two (distress beacon at {x},{y}): {x*4000000 + y}")
     # x,y = part2_2()
     # print(f"answer two (distress beacon at {x},{y}): {x*4000000 + y}")
-
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)

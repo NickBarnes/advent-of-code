@@ -3,13 +3,6 @@
 # Could have been quadratic, but turns out just to be a straight
 # linear equation. Boring!
 
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'util'))
-
-import walk
-import file
-
 monkeys = {}
 
 class Monkey:
@@ -92,13 +85,12 @@ class Monkey:
                     self.coeffs_ = (left[0]*right[2],left[1]*right[2],left[2] * right[0])
         return self.coeffs_
 
-def go(filename):
-    print(f"results from {filename}:")
-    for l in file.lines(filename):
+def go(input):
+    for l in parse.lines(input):
         Monkey(l)
     for m in monkeys.values():
         m.resolve()
-    print(f"Answer one, taking 'humn' value as {monkeys['humn'].value()}: {monkeys['root'].value()}")
+    print(f"part 1 (taking 'humn' value as {monkeys['humn'].value()}): {monkeys['root'].value()}")
 
     # (ax+b)/c = (dx+e)/f
 
@@ -120,8 +112,4 @@ def go(filename):
 
     assert B % A == 0
     
-    print(f"Answer two, what 'humn' value for root to balance: {-B/A}")
-    
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)
+    print(f"part 2 (what 'humn' value for root to balance): {-B/A}")

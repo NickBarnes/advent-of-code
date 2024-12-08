@@ -1,10 +1,3 @@
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'util'))
-
-import walk
-import file
-
 rock_defs = [
     ['####',
     ],[
@@ -33,10 +26,9 @@ rock_defs = [
 def get_rocks():
     return [[[sum(1<<(i+j+1) if c == '#' else 0 for i,c in enumerate(l)) for l in r[::-1]] for j in range(8)] for r in rock_defs]
 
-def go(filename):
-    print(f"results from {filename}:")
+def go(input):
     rocks = get_rocks()
-    jets = [-1 if c == '<' else 1 for c in open(filename,'r').read().strip()]
+    jets = [-1 if c == '<' else 1 for c in input.strip()]
 
     # experimentally observed maximum roof depth of 28.
     KEYLENGTH=40
@@ -106,7 +98,3 @@ def go(filename):
     print(f"answer one (height after 2022 drops): {top}")
     top = drop(1_000_000_000_000)
     print(f"answer two (height after a trillion drops): {top}")
-
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)

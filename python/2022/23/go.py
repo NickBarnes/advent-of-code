@@ -1,10 +1,3 @@
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'util'))
-
-import walk
-import file
-
 # The directions checked for each possible move. The middle direction
 # is the one taken.
 
@@ -13,10 +6,9 @@ moves = [((-1,-1),(0,-1),(1,-1)),
          ((-1,-1),(-1,0),(-1,1)),
          ((1,-1),(1,0),(1,1))]
 
-def go(filename):
+def go(input):
     global moves
-    print(f"results from {filename}:")
-    elves = {(x,y) for y,l in enumerate(file.lines(filename)) for x in range(len(l)) if l[x] == '#'}
+    elves = {(x,y) for y,l in enumerate(parse.lines(input)) for x in range(len(l)) if l[x] == '#'}
 
     round = 0
     while True:
@@ -52,14 +44,10 @@ def go(filename):
             miny = min(y for x,y in elves)
             maxy = max(y for x,y in elves)
             free = (maxx-minx+1)*(maxy-miny+1)-len(elves)
-            print(f"After {round} rounds, there are {free} free spots in the bounding box (answer one)")
+            print(f"part 1 (free spots in bounding box after {round} rounds): {free}")
         if moved == 0:
             # part 2
-            print(f"on round {round}, no elves moved (answer two).")
+            print(f"part 2 (round when no elves move): {round}")
             break
         # rotate the moves for the next round
         moves = moves[1:]+moves[:1]
-
-if __name__ == '__main__':
-    for f in file.files(__file__):
-        go(f)

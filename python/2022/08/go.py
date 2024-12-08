@@ -9,6 +9,7 @@ def visible(trees, i,j):
             all(trees[i][j] > trees[k][j] for k in range(i)))
 
 import itertools
+
 # this should be in itertools
 def takeuntil(iter, c):
     for v in iter:
@@ -35,18 +36,9 @@ def see(trees,i,j,di,dj):
 def score(trees, i, j):
     return see(trees,i,j,1,0) * see(trees,i,j,-1,0) * see(trees,i,j,0,1) * see(trees,i,j,0,-1)
 
-def go(filename):
-    print(f"results from {filename}:")
-    trees = [[int(c) for c in l.strip()] for l in open(filename,'r')]
+def go(input):
+    trees = [[int(c) for c in l] for l in parse.lines(input)]
     visible_trees = sum(1 for i in range(len(trees)) for j in range(len(trees[i])) if visible(trees, i, j))
-    print(f"Number of visible trees (answer one): {visible_trees}")
+    print(f"part 1 (number of visible trees): {visible_trees}")
     max_score = max(score(trees,i,j) for i in range(len(trees)) for j in range(len(trees[i])))
-    print(f"Highest scenery score (answer two): {max_score}")
-
-# daily boilerplate for applying 'go' to files on the command-line.
-
-import sys
-
-if len(sys.argv) > 1:
-    for arg in sys.argv[1:]:
-        go(arg)
+    print(f"part 2 (highest scenery score): {max_score}")

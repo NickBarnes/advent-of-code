@@ -29,13 +29,11 @@ class Dir:
         for c in self.contents.values():
             c.ls(indent+'  ')
 
-def go(filename):
-    print(f"results from {filename}:")
-
+def go(input):
     root = Dir('/', None)
     pwd = root
     dirs = [] # accumulate all dirs so we can search later.
-    for l in open(filename,'r'):
+    for l in parse.lines(input):
         if l[0] == '$': # command
             cmd = l.split() # $, cd/ls, cd-target
             if cmd[1] == 'cd':
@@ -59,19 +57,10 @@ def go(filename):
                 pwd.contents[f] = File(f, int(s))
 
     total_of_small_dirs = sum(t for d in dirs if (t := d.total()) < 100000)
-    print(f"total of small dirs (answer one): {total_of_small_dirs}")
+    print(f"part 1 (total of small dirs): {total_of_small_dirs}")
     
     space_avail = 70000000 - root.total()
     to_free = 30000000 - space_avail
     # slow but I don't care
     best_dir = min((d for d in dirs if d.total() >= to_free), key=lambda d:d.total())
-    print(f"size of best dir to delete (answer two): {best_dir.total()}")
-    
-
-# daily boilerplate for applying 'go' to files on the command-line.
-
-import sys
-
-if len(sys.argv) > 1:
-    for arg in sys.argv[1:]:
-        go(arg)
+    print(f"part 2 (size of best dir to delete): {best_dir.total()}")

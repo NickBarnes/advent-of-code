@@ -1,3 +1,0 @@
-[submodule "input"]
-	path = input
-	url = git@github.com:NickBarnes/2023-advent-inputs.git
