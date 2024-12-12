@@ -53,8 +53,8 @@ def shortest_path(start, end, weights, heuristic):
                 shortest[next] = dist
                 heapq.heappush(grey, (dist + heuristic(next), next))
 
-def grid(xmax, ymax, diagonal=False):
-    """Return a neighbour function for a 2D grid size `xmax` by `ymax`. If
+def grid(xlim, ylim, diagonal=False):
+    """Return a neighbour function for a 2D grid size `xlim` by `ylim`. If
     `diagonal` then include diagonal neighbours.
 
     """
@@ -66,7 +66,7 @@ def grid(xmax, ymax, diagonal=False):
                     continue
                 newx = x+dx
                 newy = y+dy
-                if 0 <= newx < xmax and 0 <= newy < ymax:
+                if 0 <= newx < xlim and 0 <= newy < ylim:
                     yield newx, newy
     return neighbours
 
