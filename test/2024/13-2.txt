@@ -1,0 +1,23 @@
+Button A: X+48, Y+36
+Button B: X+20, Y+15
+Prize: X=4800, Y=3601
+
+Button A: X+48, Y+36
+Button B: X+40, Y+30
+Prize: X=4804, Y=3603
+
+Button A: X+48, Y+36
+Button B: X+40, Y+30
+Prize: X=4800, Y=3600
+
+Button A: X+48, Y+36
+Button B: X+40, Y+30
+Prize: X=112, Y=84
+
+Button A: X+48, Y+36
+Button B: X+28, Y+21
+Prize: X=4800, Y=3600
+
+Button A: X+480, Y+360
+Button B: X+28, Y+21
+Prize: X=4800, Y=3600
