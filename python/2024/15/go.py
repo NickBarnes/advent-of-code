@@ -1,3 +1,7 @@
+# Generalised solution to a robot pushing arbitrarily-shaped boxes
+# around a warehouse (as long as each character of a box uniquely
+# identifies the box shape and the character's position within it).
+
 dirs = {'^': (0,-1),
         'v': (0,1),
         '<': (-1,0),
@@ -8,6 +12,12 @@ scaled = {'#':'##',
           'O':'[]',
           '@':'@.',
           '.':'..',
+        }
+
+# Relative coordinates of other parts of a box, given a box character.
+boxes = {'O': [],
+         '[' : [(1,0)],
+         ']' : [(-1,0)],
         }
 
 def go(input):
@@ -30,20 +40,39 @@ def go(input):
         grid[(x2,y2)] = grid[(x1,y1)]
         del grid[(x1,y1)]
 
+    # If it's possible for the robot to move from x,y to x+dx,y+dy,
+    # then do so.
+    def push(x,y,dx,dy):
+        movers = {}
+        grey = {(x,y)}
+        def add(x,y):
+            if (x,y) not in movers:
+                grey.add((x,y))
+        while grey:
+            mx,my = grey.pop()
+            assert (mx,my) in grid
+            movers[(mx,my)] = grid[(mx,my)]
+            cx,cy = mx+dx,my+dy
+            c = grid.get((cx,cy))
+            if c is None: # empty space, can move
+                continue
+            elif c == '#': # wall: entire move is cancelled
+                return x,y
+            else:
+                assert c in boxes
+                add(cx,cy)
+                for px,py in boxes[c]:
+                    add(cx+px,cy+py)
+        for mx,my in movers:
+            del grid[(mx,my)]
+        for mx,my in movers:
+            grid[(mx+dx,my+dy)] = movers[(mx,my)]
+        return x+dx,y+dy
+
     # part 1
     x,y = rx,ry
     for dx,dy in insns:
-        tx,ty = x+dx, y+dy
-        while grid.get((tx,ty)) == 'O':
-            tx,ty = tx+dx, ty+dy
-        if (tx,ty) not in grid: # move chain
-            while tx != x or ty != y:
-                move(tx-dx,ty-dy,tx,ty)
-                tx,ty = tx-dx, ty-dy
-            x,y = x+dx,y+dy
-        else:
-            assert grid[(tx,ty)] == '#'
-
+        x,y = push(x,y,dx,dy)
     print("part 1 (GPS total from basic warehouse):",
           sum(100*j+i for (i,j) in grid if grid[(i,j)] == 'O'))
     print('\n'.join(''.join(grid.get((i,j),' ') for i in range(width))
@@ -60,29 +89,7 @@ def go(input):
     # part 2
     x,y = 2*rx,ry
     for dx,dy in insns:
-        movers = set()
-        grey = {(x,y)}
-        moving = True
-        while grey:
-            mx,my = grey.pop()
-            assert (mx,my) in grid
-            movers.add((mx,my))
-            cx,cy=mx+dx,my+dy
-            if grid.get((cx,cy)) == '#': # wall: entire move is cancelled
-                grey,moving = set(), False
-            elif grid.get((cx,cy)) == '[' and dx != -1:
-                grey.add((cx,cy))
-                grey.add((cx+1,cy))
-            elif grid.get((cx,cy)) == ']' and dx != 1:
-                grey.add((cx,cy))
-                grey.add((cx-1,cy))
-        if moving:
-            move = {(mx,my):grid[(mx,my)] for (mx,my) in movers}
-            for mx,my in move:
-                del grid[(mx,my)]
-            for mx,my in move:
-                grid[(mx+dx,my+dy)] = move[(mx,my)]
-            x,y = x+dx,y+dy
+        x,y = push(x,y,dx,dy)
     print("part 2 (GPS total for larger warehouse):",
           sum(100*j+i for (i,j) in grid if grid[(i,j)] == '['))
     print('\n'.join(''.join(grid.get((i,j),' ') for i in range(width))
