@@ -65,6 +65,9 @@ class IntGrid:
     def __iter__(self):
         return iter(self._grid)
 
+    def __contains__(self,p):
+        return p in self._grid
+
     def items(self):
         return self._grid.items()
 
