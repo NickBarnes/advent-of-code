@@ -17,24 +17,24 @@ def go(input):
     # be quicker.
 
     grey = []
-    shortest = {}
-    back = defaultdict(set)
+    shortest = {}             # (x,y,dx,dy) -> lowest cost
+    back = defaultdict(set)   # (x,y,dx,dy) -> set of tiles on best paths
     winner = 1000 * len(grid)
 
-    # record that we can get to `k` (at p) from `oldk` at `cost`
+    # record that we can get to `k` from `oldk` at `cost`
     def add (oldk,k,cost):
         nonlocal winner
-        p = (k[0],k[1])
-        if grid.get(p) == '#':
+        c = grid.get((k[0],k[1]))
+        if c == '#':
             return
-        if grid.get(p) == 'E' and cost < winner:
+        if c == 'E' and cost < winner:
             winner = cost
         if k not in shortest or shortest[k] > cost: # new shortest route
             shortest[k] = cost
-            back[k] = back[oldk] | {oldk,k}
-            heapq.heappush(grey, (cost,k))
+            back[k] = back[oldk] | {k}
+            heapq.heappush(grey, (cost, k))
         elif shortest[k] == cost: # alternative route, same cost
-            back[k] |= back[oldk] | {oldk,k}
+            back[k] |= back[oldk]
 
     add((sx,sy,1,0),(sx,sy,1,0),0)
 
