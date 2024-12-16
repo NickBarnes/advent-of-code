@@ -1,20 +1,13 @@
 def go(input):
-    grid = parse.digits(input)
-
-    xlim, ylim = len(grid[0]), len(grid)
-    map = {(x,y):grid[y][x] for x in range(xlim) for y in range(ylim)}
-    starts = [(x,y) for x,y in map if map[(x,y)] == 0]
+    grid = intgrid.IntGrid(parse.digits(input))
+    starts = set(p for p in grid if grid.get(p) == 0)
 
     def uphill(p):
-        x,y = p
-        val = map[p]
-        for dx in range(-1,2):
-            for dy in range(-1,2):
-                if (dx and dy) or (dx == dy == 0): # orthogonal only
-                    continue
-                newp = (x+dx, y+dy)
-                if map.get(newp) == val+1:
-                    yield newp
+        val = grid.get(p)
+        for dp in intgrid.ortho_dirs.values():
+            newp = p+dp
+            if grid.get(newp) == val+1:
+                yield newp
     
     score = 0
     for start in starts:
