@@ -19,11 +19,16 @@ def go(input):
     grey = []
     shortest = {}
     back = defaultdict(set)
+    winner = 1000 * len(grid)
 
     # record that we can get to `k` (at p) from `oldk` at `cost`
     def add (oldk,k,cost):
-        if grid.get((k[0],k[1])) == '#':
+        nonlocal winner
+        p = (k[0],k[1])
+        if grid.get(p) == '#':
             return
+        if grid.get(p) == 'E' and cost < winner:
+            winner = cost
         if k not in shortest or shortest[k] > cost: # new shortest route
             shortest[k] = cost
             back[k] = back[oldk] | {oldk,k}
@@ -35,6 +40,8 @@ def go(input):
 
     while grey:
         cost,k = heapq.heappop(grey)
+        if cost > winner: # everything left on heap loses
+            break
         if shortest[k] < cost: # already got here for less
             continue
         x,y,dx,dy = k
@@ -42,15 +49,16 @@ def go(input):
         add (k,(x,y,-dy,dx),cost+1000)
         add (k,(x,y,dy,-dx),cost+1000)
     
-    total_costs = sorted((c,dx,dy) for ((x,y,dx,dy),c) in shortest.items()
-                         if x == ex and y == ey)
-    print("part 1 (winning reindeer score):",
-          total_costs[0][0])
+    print("part 1 (winning reindeer score):", winner)
 
-    # winning direction
-    bestdx,bestdy = total_costs[0][1],total_costs[0][2]
+    # Could come at final square from several directions
+    winning_directions = [(dx,dy)
+                          for ((x,y,dx,dy),c) in shortest.items()
+                          if x == ex and y == ey and c == winner]
     # all best tiles
-    best = set((x,y) for x,y,_,_ in back[(ex,ey,bestdx,bestdy)])
+    best = set((x,y)
+               for dx,dy in winning_directions
+               for x,y,_,_ in back[(ex,ey,dx,dy)])
     print("part 2 (number of best spots):", len(best))
     # map of best spots
     print('\n'.join(''.join('O' if (i,j) in best else 
