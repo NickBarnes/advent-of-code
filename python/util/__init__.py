@@ -3,7 +3,8 @@ from collections import defaultdict, Counter, deque
 import re
 import functools
 import math
+import heapq
 
 __all__ = ('parse interval graph linear misc'
-           ' re functools math'
+           ' re functools math heapq'
            ' defaultdict Counter deque').split()
