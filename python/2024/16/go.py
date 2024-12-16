@@ -33,7 +33,7 @@ def go(input):
             shortest[k] = cost
             back[k] = back[oldk] | {oldk,k}
             heapq.heappush(grey, (cost,k))
-        if shortest[k] == cost: # alternative route, same cost
+        elif shortest[k] == cost: # alternative route, same cost
             back[k] |= back[oldk] | {oldk,k}
 
     add((sx,sy,1,0),(sx,sy,1,0),0)
@@ -48,7 +48,7 @@ def go(input):
         add (k,(x+dx,y+dy,dx,dy),cost+1)
         add (k,(x,y,-dy,dx),cost+1000)
         add (k,(x,y,dy,-dx),cost+1000)
-    
+
     print("part 1 (winning reindeer score):", winner)
 
     # Could come at final square from several directions
