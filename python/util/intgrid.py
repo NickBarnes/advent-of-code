@@ -1,4 +1,7 @@
-class V2:
+import functools
+
+@functools.total_ordering # So that V2(x,y) sorts as (x,y)
+class V2: # Hmm, could use a namedtuple?
     def __init__(self,x,y):
         self.x = x
         self.y = y
@@ -15,7 +18,7 @@ class V2:
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
 
-    def __lt__(self, other):
+    def __lt__(self, other): # useful for sorting. Sorts as (x,y).
         return self.x < other.x or (self.x == other.x and self.y < other.y)
 
     def __hash__(self):
@@ -36,12 +39,6 @@ class V2:
     def __repr__(self):
         return f"<{self.__class__.__name__}: {self.x},{self.y}>"
 
-ortho_dirs = {'>': V2(1,0),
-              '<': V2(-1,0),
-              '^': V2(0,-1),
-              'v': V2(0,1),
-              }
-
 all_dirs = {'^': V2(0,-1),
             '7': V2(1,-1),
             '>': V2(1,0),
@@ -51,6 +48,8 @@ all_dirs = {'^': V2(0,-1),
             '<': V2(-1,0),
             'r': V2(-1,-1),
             }
+
+ortho_dirs = {c:v for c,v in all_dirs.items() if c in '^v<>'}
 
 class IntGrid:
     def __init__(self, lines, ignore='.'):
@@ -69,7 +68,7 @@ class IntGrid:
     def items(self):
         return self._grid.items()
 
-    def find (self, char):
+    def find(self, char):
         return (p for p,c in self._grid.items() if c == char)
 
     def find_only(self, char):
@@ -93,11 +92,11 @@ class IntGrid:
         del self._grid[p1]
 
     def move_all(self, ps, dp):
-        old = {p:self._grid[p] for p in ps}
+        moved = {p+dp:self._grid[p] for p in ps}
         for p in ps:
+            assert p in self._grid
             del self._grid[p]
-        for p,c in old.items():
-            self._grid[p+dp] = c
+        self._grid.update(moved)
 
     # Find the orthogonally-connected set of grid cells
     # which have the same value as p.
@@ -136,3 +135,5 @@ class IntGrid:
                                  for i in range(self.width))
                          for j in range(self.height)))
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__}: {len(self._grid)} cells in {self.width}x{self.height}>"
