@@ -1,6 +1,13 @@
-# Simple driver script for Advent of Code instances. Invoke with some
+# Simple driver script for Advent of Code programs. Invoke with some
 # set of YYYY/DD arguments. If given "-t" anywhere on the command
 # line, all test inputs will be run instead of the main puzzle input.
+# A few useful parameters are passed to each AoC program, in an "AoC"
+# object:
+# 
+#    AoC.testing:  a boolean: are we testing with -t?
+#    AoC.verbose:  a boolean: was -v gven?
+#    AoC.year_day: a string, YYYY/DD
+#    AoC.file:     a string, path to the input file
 # 
 # Should be run from the top directory in the repo, where
 # sub-directories test/ and input/ contain test and input files
@@ -19,39 +26,50 @@ import os
 from util import *
 
 class AoC:
-    pass
+    def __repr__(self):
+        return "<AoC "+' '.join(f'{k}={v}' for k,v in self.__dict__.items())+">"
+
+    def run():
+        params = AoC()
+        args = sys.argv[1:]
+        params.testing = '-t' in args
+        if params.testing:
+            args.remove('-t')
+        params.verbose = '-v' in args
+        if params.verbose:
+            args.remove('-v')
+        if not args:
+            import datetime
+            today = datetime.date.today()
+            if today.month != 12 or today.day > 25:
+                sys.stderr.write("Not an Advent of Code date; pass YYYY/DD as arguments.\n")
+                sys.exit(1)
+            args = [f"{today.year:04}/{today.day:02}"]
+            
+        dir = os.path.dirname(os.path.realpath(__file__))
+
+        for params.year_day in args:
+            print("testing" if params.testing else "running", params.year_day)
+            if params.testing:
+                files = sorted(glob.glob(f"test/{params.year_day}*.txt"))
+            else:
+                files = glob.glob(f"input/{params.year_day}.txt")
+            src = f"{dir}/{params.year_day}/go.py"
+
+            # Here is the filthy compiler hack
+            py = open(src).read()
+            code = compile(py, src, 'exec')
+            # Tweak bindings for running AoC program.
+            myglobals = globals().copy()
+            # rebind "params" to "AoC".
+            myglobals['AoC'] = params
+            mylocals = {} # conceal all this function's local variables.
+            exec(code, myglobals, mylocals)
+            # `exec` will bind `mylocals['go']`
+            
+            for params.file in files:
+                print(f"results from {params.file}:")
+                mylocals['go'](open(params.file,'r').read())
 
 if __name__ == '__main__':
-    AoC = AoC()
-    AoC.args = sys.argv[1:]
-    AoC.testing = '-t' in AoC.args
-    if AoC.testing:
-        AoC.args.remove('-t')
-    AoC.verbose = '-v' in AoC.args
-    if AoC.verbose:
-        AoC.args.remove('-v')
-    if not AoC.args:
-        import datetime
-        AoC.today = datetime.date.today()
-        if AoC.today.month != 12 or AoC.today.day > 25:
-            sys.stderr.write("Not an Advent of Code date; pass YYYY/DD as arguments.\n")
-            sys.exit(1)
-        AoC.args = [f"{AoC.today.year:04}/{AoC.today.day:02}"]
-        
-    AoC.dir = os.path.dirname(os.path.realpath(__file__))
-    for AoC.year_day in AoC.args:
-        print("testing" if AoC.testing else "running", AoC.year_day)
-        if AoC.testing:
-            AoC.files = sorted(glob.glob(f"test/{AoC.year_day}*.txt"))
-        else:
-            AoC.files = glob.glob(f"input/{AoC.year_day}.txt")
-        AoC._src = f"{AoC.dir}/{AoC.year_day}/go.py"
-
-        # Here is the filthy compiler hack
-        AoC._py = open(AoC._src).read()
-        AoC._code = compile(AoC._py, AoC._src, 'exec')
-        exec(AoC._code, globals())
-        
-        for AoC.file in AoC.files:
-            print(f"results from {AoC.file}:")
-            go(open(AoC.file,'r').read())
+    AoC.run()
