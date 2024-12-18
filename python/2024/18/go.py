@@ -1,12 +1,11 @@
 def go(input):
     bytes = [intgrid.V2(*(int(v) for v in l.split(',')))
              for l in parse.lines(input)]
-    testing = len(bytes) < 100
-    width,height = (7,7) if testing else (71,71)
+    width,height = (7,7) if AoC.testing else (71,71)
     start = intgrid.V2(0,0)
     end = intgrid.V2(width-1,height-1)
              
-    prefix = 12 if testing else 1024
+    prefix = 12 if AoC.testing else 1024
 
     def path_after_bytes(n):
         # Return the shortest path after `n` bytes have fallen.
@@ -40,12 +39,13 @@ def go(input):
     print("part 2 (first byte which blocks path):", bytes[base])
 
     # Display resulting grid.
-    grid = {}
-    for p in bytes[:base]:
-        grid[(p.x,p.y)] = '#'
-    for p in last_path:
-        grid[(p.x,p.y)] = 'O'
-    grid[(start.x,start.y)] = 'O'
+    if AoC.verbose:
+        grid = {}
+        for p in bytes[:base]:
+            grid[(p.x,p.y)] = '#'
+        for p in last_path:
+            grid[(p.x,p.y)] = 'O'
+        grid[(start.x,start.y)] = 'O'
 
-    print('\n'.join(''.join(grid.get((i,j),'.') for i in range(width))
-                    for j in range(height)))
+        print('\n'.join(''.join(grid.get((i,j),'.') for i in range(width))
+                        for j in range(height)))

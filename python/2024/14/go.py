@@ -4,8 +4,7 @@ def go(input):
     robots = [robot_re.match(l) for l in parse.lines(input)]
     assert all(robots)
     robots = [tuple(int(s) for s in r.groups()) for r in robots]
-    testing = len(robots) < 20
-    width,height = (11,7) if testing else (101,103)
+    width,height = (11,7) if AoC.testing else (101,103)
     qw,qh = width // 2, height // 2
 
     counts = Counter()
@@ -18,7 +17,9 @@ def go(input):
     print("part 1 (total safety factor after 100 seconds):",
           misc.prod(counts.values()))
 
-    if not testing:
+    if AoC.testing:
+        print("no part 2 (easter egg picture) for test files.")
+    else:
         t = 0
         while True:
             t += 1
@@ -32,9 +33,10 @@ def go(input):
                 # rule of thumb: average robot adjacent to at least one
                 # other.
                 print(f"part 2 (easter egg picture time): {t}")
-                print('\n'.join(''.join('*' if (i,j) in robotmap else ' '
-                                        for i in range(width))
-                                for j in range(height)))
+                if AoC.verbose:
+                    print('\n'.join(''.join('*' if (i,j) in robotmap else ' '
+                                            for i in range(width))
+                                    for j in range(height)))
                 break
             
         

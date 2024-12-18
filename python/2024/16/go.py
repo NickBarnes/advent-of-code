@@ -50,5 +50,6 @@ def go(input):
     print("part 2 (number of best spots):", len(best))
     # map of best spots
     grid.set_all(best, 'O')
-    print(grid.show())
+    if AoC.verbose:
+        print(grid.show())
     

@@ -18,33 +18,40 @@ import os
 
 from util import *
 
+class AoC:
+    pass
+
 if __name__ == '__main__':
-    args = sys.argv[1:]
-    testing = '-t' in args
-    if testing:
-        args.remove('-t')
-    if not args:
+    AoC = AoC()
+    AoC.args = sys.argv[1:]
+    AoC.testing = '-t' in AoC.args
+    if AoC.testing:
+        AoC.args.remove('-t')
+    AoC.verbose = '-v' in AoC.args
+    if AoC.verbose:
+        AoC.args.remove('-v')
+    if not AoC.args:
         import datetime
-        today = datetime.date.today()
-        if today.month != 12 or today.day > 25:
+        AoC.today = datetime.date.today()
+        if AoC.today.month != 12 or AoC.today.day > 25:
             sys.stderr.write("Not an Advent of Code date; pass YYYY/DD as arguments.\n")
             sys.exit(1)
-        args = [f"{today.year:04}/{today.day:02}"]
+        AoC.args = [f"{AoC.today.year:04}/{AoC.today.day:02}"]
         
-    dir = os.path.dirname(os.path.realpath(__file__))
-    for year_day in args:
-        print("testing" if testing else "running", year_day)
-        if testing:
-            files = sorted(glob.glob(f"test/{year_day}*.txt"))
+    AoC.dir = os.path.dirname(os.path.realpath(__file__))
+    for AoC.year_day in AoC.args:
+        print("testing" if AoC.testing else "running", AoC.year_day)
+        if AoC.testing:
+            AoC.files = sorted(glob.glob(f"test/{AoC.year_day}*.txt"))
         else:
-            files = glob.glob(f"input/{year_day}.txt")
-        src = f"{dir}/{year_day}/go.py"
+            AoC.files = glob.glob(f"input/{AoC.year_day}.txt")
+        AoC._src = f"{AoC.dir}/{AoC.year_day}/go.py"
 
         # Here is the filthy compiler hack
-        py = open(src).read()
-        code = compile(py, src, 'exec')
-        exec(code, globals())
+        AoC._py = open(AoC._src).read()
+        AoC._code = compile(AoC._py, AoC._src, 'exec')
+        exec(AoC._code, globals())
         
-        for file in files:
-            print(f"results from {file}:")
-            go(open(file,'r').read())
+        for AoC.file in AoC.files:
+            print(f"results from {AoC.file}:")
+            go(open(AoC.file,'r').read())

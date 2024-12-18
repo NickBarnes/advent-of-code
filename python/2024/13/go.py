@@ -32,20 +32,20 @@ class Machine:
         self.xp += 10_000_000_000_000
         self.yp += 10_000_000_000_000
 
-    def degenerate_solve(self, testing=False):
+    def degenerate_solve(self):
         # A and B movements are parallel
         # call the common sub-step (dx, dy)
         dx = math.gcd(self.xa, self.xb) # x sub-step
         ma = self.xa // dx # number of sub-step movements for A
         if self.xp % dx != 0: # wrong granularity to reach prize; no solution
-            if testing: print("wrong granularity to reach prize", end='')
+            if AoC.verbose: print("wrong granularity to reach prize", end='')
             return None
 
         m = self.xp // dx # number of sub-step movements for prize
 
         dy = self.ya // ma # y sub-step
         if m * dy != self.yp: # Prize not parallel to A,B; no solution
-            if testing: print("prize not parallel to A,B", end='')
+            if AoC.verbose: print("prize not parallel to A,B", end='')
             return None
 
         mb = self.xb // dx # number of sub-step movements for B
@@ -70,7 +70,7 @@ class Machine:
         b = b0 + kmin * db
 
         if b < 0: # minimum A presses still requires negative B presses
-            if testing: print("B presses always negative", end='')
+            if AoC.verbose: print("B presses always negative", end='')
             return
 
         if self.xa > 3 * self.xb:
@@ -85,7 +85,7 @@ class Machine:
         return 3 * a + b, a, b
 
 
-    def solve(self, testing=False):
+    def solve(self):
         #   a.xa    + b.xb    == xp
         # so (multiply by ya)
         #   a.xa.ya + b.xb.ya == xp.ya       ... (1)
@@ -100,45 +100,45 @@ class Machine:
         # if either a or b is not integral, there is no solution
 
         if self.degenerate:
-            return self.degenerate_solve(testing)
+            return self.degenerate_solve()
         b_numerator = self.xp * self.ya - self.yp * self.xa
         if b_numerator % self.b_denominator != 0: # b not integral
-            if testing: print("non-integral B presses", end='')
+            if AoC.verbose: print("non-integral B presses", end='')
             return None
         b = b_numerator // self.b_denominator
         if b < 0: # b negative
-            if testing: print("negative B presses", end='')
+            if AoC.verbose: print("negative B presses", end='')
             return None
         a_numerator = self.xp - b * self.xb
         if a_numerator % self.xa != 0: # a not integral
-            if testing: print("non-integral A presses", end='')
+            if AoC.verbose: print("non-integral A presses", end='')
             return None
         a = a_numerator // self.xa
         if a < 0: # a negative
-            if testing: print("negative A presses", end='')
+            if AoC.verbose: print("negative A presses", end='')
             return None
         return a * 3 + b, a, b
 
-def cost(machines, testing=False):
+def cost(machines):
     total = 0
     for i,m in enumerate(machines):
-        if testing: print(f"machine {i}: ", end='')
-        solution = m.solve(testing)
+        if AoC.verbose: print(f"machine {i}: ", end='')
+        solution = m.solve()
         if solution:
             cost,a,b = solution
-            if testing:
+            if AoC.verbose:
                 print(f"{a} x A ({m.xa},{m.ya}), {b} x B ({m.xb},{m.yb}) = P ({m.xp},{m.yp}): cost {cost}")
             total += cost
-        elif testing:
+        elif AoC.verbose:
             print()
     return total
 
 def go(input):
     machines = [Machine(section) for section in parse.sections(input)]
-    testing = len(machines) < 20
     print("part 1 (cost with regular machines):",
-          cost(machines, testing=testing))
+          cost(machines))
     for machine in machines:
         machine.correct()
     print("part 2 (cost with corrected machines):",
-          cost(machines, testing=testing))
+          cost(machines))
+    

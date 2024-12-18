@@ -56,7 +56,8 @@ def go(input):
         p = push(p,dp)
     print("part 1 (GPS total from basic warehouse):",
           sum(score(p) for p in grid if grid.get(p) == 'O'))
-    print(grid.show())
+    if AoC.verbose:
+        print(grid.show())
 
     # scale up warehouse
     larger = [''.join(scaled[c] for c in l) for l in warehouse]
@@ -68,4 +69,5 @@ def go(input):
         p = push(p, dp)
     print("part 2 (GPS total for larger warehouse):",
           sum(score(p) for p in grid if grid.get(p) == '['))
-    print(grid.show())
+    if AoC.verbose:
+        print(grid.show())
