@@ -33,6 +33,9 @@ class V2: # Hmm, could use a namedtuple?
     def ortho(self):
         return self.x == 0 or self.y == 0
 
+    def in_box(self, width, height):
+        return 0 <= self.x < width and 0 <= self.y < height
+
     def __str__(self):
         return f"{self.x},{self.y}"
 
