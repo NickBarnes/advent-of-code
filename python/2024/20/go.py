@@ -3,6 +3,11 @@ def go(input):
     start = grid.find_only('S')
     end = grid.find_only('E')
 
+
+    # Return a distance dictionary p -> distance-to-end and a path
+    # dictionary steps-from-start -> p, for the unique legitimate path
+    # through the grid from the start to the end.
+
     def legit_path(grid):
         p = end
         d = 0
@@ -20,33 +25,41 @@ def go(input):
         total = d
         return distance, {total-d:n for n,d in distance.items()}
 
-    # Find all the cheats (defined as (start,end) pairs
+    # Find all the cheats, defined as (start,end) pairs, no more than
+    # `max_cheat_len` Manhattan distance apart, which save at least
+    # `margin` steps compared to the legit path `path` (length
+    # `total`) using the distance array `distances`.
+
     def find_cheats(grid, margin, path, distances, total, max_cheat_len):
         cheats = defaultdict(set)
         max_len = total - margin
         for i in range(len(path)):
             p = path[i]
-            for x in range(max(0, p.x - max_cheat_len), min(grid.width, p.x + max_cheat_len + 1)):
-                y_range = max_cheat_len - abs(p.x-x)
-                for y in range(max(0, p.y - y_range), min(grid.height, p.y + y_range + 1)):
+            for dx in range(-max_cheat_len, max_cheat_len + 1):
+                x = p.x + dx
+                if x < 0 or x >= grid.width: continue
+                y_range = max_cheat_len - abs(dx)
+                for dy in range(-y_range, y_range + 1):
+                    y = p.y + dy
+                    if y < 0 or y >= grid.height: continue
                     # we can cheat to x,y
                     n = intgrid.V2(x,y)
-                    cheat_len = abs(p.x - x) + abs(p.y - y)
-                    if distances.get(n, grid.area) < distances[p]: # further down the track
-                        total_len = i + cheat_len + distances[n]
-                        if total_len <= max_len:
-                            cheats[total_len].add((p, n))
+                    total_len = i + abs(dx) + abs(dy) + distances.get(n, grid.area)
+                    if total_len <= max_len:
+                        cheats[total_len].add((p, n))
         return cheats
 
     distances, path = legit_path(grid)
+    total = len(path)-1 # fence-post
+
     if (AoC.verbose):
-        print ('\n'.join(''.join(('#' if grid.get(p) == '#'
-                                  else str(distances[p] % 10) if p in distances else '.')
+        print ('\n'.join(''.join(('.' if grid.get(p) == '#' else
+                                  str(distances[p] % 10) if p in distances else ' ')
                                  for i in range(grid.width)
                                  if (p := intgrid.V2(i,j)))
                          for j in range(grid.height)))
         
-    total = len(path)-1 # fence-post
+    # part 1
     margin = 1 if AoC.testing else 100
     cheats = find_cheats(grid, margin, path, distances, total, 2)
     if AoC.verbose:
@@ -55,6 +68,7 @@ def go(input):
     print(f"part 1 (cheats length up to 2, saving at least {margin}):",
           sum(len(l) for l in cheats.values()))
 
+    # part 2
     margin = 50 if AoC.testing else 100
     cheats = find_cheats(grid, margin, path, distances, total, 20)
     if AoC.verbose:
