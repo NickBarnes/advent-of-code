@@ -63,13 +63,14 @@ class AoC:
             myglobals = globals().copy()
             # rebind "params" to "AoC".
             myglobals['AoC'] = params
-            mylocals = {} # conceal all this function's local variables.
-            exec(code, myglobals, mylocals)
-            # `exec` will bind `mylocals['go']`
+            exec(code, myglobals)
+            # `exec` will bind `myglobals['go']`
             
             for params.file in files:
                 print(f"results from {params.file}:")
-                mylocals['go'](open(params.file,'r').read())
+                myglobals['go'](open(params.file,'r').read())
 
 if __name__ == '__main__':
+    # Do all the work in a function so that we don't
+    # mess with the global environment.
     AoC.run()
