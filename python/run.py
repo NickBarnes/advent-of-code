@@ -48,6 +48,7 @@ class AoC:
             
         dir = os.path.dirname(os.path.realpath(__file__))
 
+        path = sys.path
         for params.year_day in args:
             print("testing" if params.testing else "running", params.year_day)
             if params.testing:
@@ -55,6 +56,9 @@ class AoC:
             else:
                 files = glob.glob(f"input/{params.year_day}.txt")
             src = f"{dir}/{params.year_day}/go.py"
+
+            sys.path = [f"{dir}/{params.year_day}",
+                        f"{dir}/{params.year_day[:4]}"] + path
 
             # Here is the filthy compiler hack
             py = open(src).read()
