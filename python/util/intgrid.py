@@ -30,6 +30,9 @@ class V2: # Hmm, could use a namedtuple?
     def ccw(self):
         return V2(self.y, -self.x)
 
+    def __len__(self):
+        return abs(self.x) + abs(self.y)
+
     def ortho(self):
         return self.x == 0 or self.y == 0
 
