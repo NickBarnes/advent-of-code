@@ -2,9 +2,10 @@
 from collections import defaultdict, Counter, deque
 import re
 import functools
+import itertools
 import math
 import heapq
 
 __all__ = ('parse interval graph linear misc intgrid'
-           ' re functools math heapq'
+           ' re functools itertools math heapq'
            ' defaultdict Counter deque').split()
