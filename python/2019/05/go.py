@@ -3,7 +3,7 @@ import intcode
 def go(input):
     orig = [int(s) for s in input.split(',')]
     ic = intcode.IntCode(orig, AoC)
-    outputs = list(ic.outputs(inputs=[1]))
+    outputs = list(ic.outputs(inputs=iter([1])))
     assert all(k==0 for k in outputs[:-1])
     print("part 1 (final output after passing diagnostics):",
           outputs[-1])
@@ -14,11 +14,11 @@ def go(input):
         # run test cases as provided
         for test in tests:
             ic.reset()
-            results.append(list(ic.outputs(inputs=[test])))
+            results.append(list(ic.outputs(inputs=iter([test]))))
         print(f"Testing new instructions, {tests} -> {results}")
 
     ic.reset()
-    outputs = list(ic.outputs(inputs=[5]))
+    outputs = list(ic.outputs(inputs=iter([5])))
     assert len(outputs) == 1
     print("part 2 (diagnostic code):",
           outputs[0])

@@ -9,9 +9,11 @@ class IntCode:
         self._code = code.copy()
         self._orig = code.copy()
         self._AoC = AoC
+        self.halted = False
 
     def reset(self):
         self._code = self._orig.copy()
+        self.halted = False
 
     # number of parameters and whether they are followed by a result address
     shapes = {99: (0, False), # HALT
@@ -50,19 +52,20 @@ class IntCode:
     def op_2(self, fun, params, lvalue):
         self._code[lvalue] = fun(params)
     
-    def outputs(self, inputs=[]):
+    # given an iterator over inputs, return an iterator over outputs.
+    def outputs(self, inputs=iter(())):
         self._ip = 0
-        inputs = deque(inputs)
         while True:
             op, params, lvalue = self.op_params()
             if op == 99:  # HALT
+                self.halted = True
                 return
             elif op == 1: # ADD
                 self.op_2(sum, params, lvalue)
             elif op == 2: # MUL
                 self.op_2(misc.prod, params, lvalue)
             elif op == 3: # IN
-                self._code[lvalue] = inputs.popleft()
+                self._code[lvalue] = next(inputs)
             elif op == 4: # OUT
                 yield params[0]
             elif op == 5: # JIF:
@@ -76,8 +79,9 @@ class IntCode:
             elif op == 8: # EQ
                 self._code[lvalue] = 1 if params[0] == params[1] else 0
     
+    # run a computer until it halts, discarding any output.
     def run(self, inputs=[]):
-        list(self.outputs(inputs))
+        list(self.outputs(iter(inputs))) # discard
 
     def poke(self, address, value):
         self._code[address] = value
