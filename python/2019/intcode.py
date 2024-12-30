@@ -1,18 +1,18 @@
 from util import *
 
-# 2019 day 2 hints that we'll need quite a sophisticated "Intcode"
-# computer implementation, so I've moved it out here where the code
-# can be shared.
+# 2019 days 2,5,7,9 all use an "Intcode" computer.
 
 class IntCode:
     def __init__(self, code, AoC):
-        self._code = code.copy()
-        self._orig = code.copy()
+        self._code = {i:v for i,v in enumerate(code)}
+        self._orig = self._code.copy()
         self._AoC = AoC
+        self._base = 0
         self.halted = False
 
     def reset(self):
         self._code = self._orig.copy()
+        self._base = 0
         self.halted = False
 
     # number of parameters and whether they are followed by a result address
@@ -25,11 +25,22 @@ class IntCode:
               6:  (2, False), # JUMP IF FALSE
               7:  (2, True),  # LESS THAN
               8:  (2, True),  # EQUALS
+              9:  (1, False), # ADJUST RELATIVE BASE
               }
 
-    def op_params(self):
-        instr = self._code[self._ip]
+    def _fetch(self):
+        res = self._code[self._ip]
         self._ip += 1
+        return res
+
+    def _read(self, addr):
+        return self._code.get(addr, 0)
+
+    def _write(self, addr, value):
+        self._code[addr] = value
+
+    def op_params(self):
+        instr = self._fetch()
         op = instr % 100
         instr //= 100
         count,write = self.shapes[op]
@@ -37,20 +48,26 @@ class IntCode:
         for k in range(count):
             mode = instr % 10
             instr //= 10
-            if mode == 1: # immediate
-                params.append(self._code[self._ip])
-            else: # indirect
-                params.append(self._code[self._code[self._ip]])
-            self._ip += 1
-        assert instr == 0 # no modes left
-        lvalue = None
+            if mode == 0: # indirect
+                params.append(self._read(self._fetch()))
+            elif mode == 1: # immediate
+                params.append(self._fetch())
+            else:
+                assert mode == 2 # relative
+                params.append(self._read(self._fetch() + self._base))
         if write: # Writes to last parameter which must be indirect
-            lvalue = self._code[self._ip]
-            self._ip += 1
+            assert instr == 0 or instr == 2
+            if instr == 0:
+                lvalue = self._fetch()
+            else:
+                lvalue = self._fetch() + self._base
+        else:
+            assert instr == 0 # no modes left
+            lvalue = None
         return op, params, lvalue
     
     def op_2(self, fun, params, lvalue):
-        self._code[lvalue] = fun(params)
+        self._write(lvalue, fun(params))
     
     # given an iterator over inputs, return an iterator over outputs.
     def outputs(self, inputs=iter(())):
@@ -65,7 +82,7 @@ class IntCode:
             elif op == 2: # MUL
                 self.op_2(misc.prod, params, lvalue)
             elif op == 3: # IN
-                self._code[lvalue] = next(inputs)
+                self._write(lvalue, next(inputs))
             elif op == 4: # OUT
                 yield params[0]
             elif op == 5: # JIF:
@@ -75,9 +92,11 @@ class IntCode:
                 if not params[0]:
                     self._ip = params[1]
             elif op == 7: # LT
-                self._code[lvalue] = 1 if params[0] < params[1] else 0
+                self._write(lvalue, 1 if params[0] < params[1] else 0)
             elif op == 8: # EQ
-                self._code[lvalue] = 1 if params[0] == params[1] else 0
+                self._write(lvalue, 1 if params[0] == params[1] else 0)
+            elif op == 9: # ADJUST RELATIVE BASE
+                self._base += params[0]
     
     # run a computer until it halts, discarding any output.
     def run(self, inputs=[]):
