@@ -113,3 +113,50 @@ class IntCode:
             return f"<{self.__class__.__name__}({len(self._code)}): {self._code[:10]}...>"
         else:
             return f"<{self.__class__.__name__}({len(self._code)}): {self._code}>"
+
+class LazyInputs:
+    def __init__(self, init):
+        self._queue = deque(init)
+        self._stopped = False
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if not self._queue:
+            self._stopped = True
+        if not self._stopped:
+                return self._queue.popleft()
+        raise StopIteration
+
+    def append(self, value):
+        self._queue.append(value)
+            
+class PrefixInputs:
+    """Make an inputs iterator which produces the values from another
+    iterator preceded by a single value. The preceded iterator can be
+    set after the fact by setting the `.rest` member.
+    """
+
+    def __init__(self, first, rest):
+        self._first = first
+        self._started = False
+        self._stopped = False
+        self.rest = rest
+    
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self._stopped:
+            raise StopIteration
+        if not self._started:
+            self._started = True
+            return self._first
+        if self.rest is not None:
+            res = next(self.rest, self)
+            if res != self:
+                return res
+        self._stopped = True
+        raise StopIteration
+

@@ -1,27 +1,9 @@
 import intcode
 
-class LazyIter:
-    def __init__(self, init):
-        self._queue = deque(init)
-        self._stopped = False
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        if not self._queue:
-            self._stopped = True
-        if not self._stopped:
-                return self._queue.popleft()
-        raise StopIteration
-
-    def append(self, value):
-        self._queue.append(value)
-            
 def paint(grid, ic):
     p = intgrid.V2(0,0)
     dp = intgrid.V2(0,-1)
-    inputs = LazyIter([grid.get(p,0)])
+    inputs = intcode.LazyInputs([grid.get(p,0)])
     ic.reset()
     outputs = ic.outputs(inputs)
     while True:
