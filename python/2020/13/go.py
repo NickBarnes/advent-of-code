@@ -12,4 +12,4 @@ def go(input):
     # part 2
     remainders = [(b, b-i) for b,i in buses]
     print("part 2 (timestamp of desired bus arrival pattern):",
-          number.chinese_remainder(remainders)[1])
+          number.general_chinese_remainder(remainders)[1])
