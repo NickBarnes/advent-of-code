@@ -1,16 +1,6 @@
 button_re = re.compile(r"^Button (.): X\+([0-9]+), Y\+([0-9]+)$")
 prize_re = re.compile(r"^Prize: X=([0-9]+), Y=([0-9]+)$")
 
-# Extended Euclidean algorithm, useful in the degenerate case (which
-# we never actually encounter).
-
-def extended_euclid(a,b):
-    if b == 0:
-        return a, 1, 0
-    else:
-        g, x, y = extended_euclid(b, a % b)
-        return g, y, x - y * (a // b)
-
 class Machine:
     def __init__(self, section):
         assert len(section) == 3
@@ -57,7 +47,7 @@ class Machine:
         # and we need to find the solution with the smallest value of c = 3a+b
 
         # First find x,y so that ma.x + mb.y = gcd(ma,mb)
-        g,x,y = extended_euclid(ma,mb) # g > 0
+        g,x,y = number.extended_euclid(ma,mb) # g > 0
 
         a0,b0 = x * (m // g), y * (m // g) # base Diophantine solution
 
