@@ -42,20 +42,30 @@ class AoC:
             import datetime
             today = datetime.date.today()
             if today.month != 12 or today.day > 25:
-                sys.stderr.write("Not an Advent of Code date; pass YYYY/DD as arguments.\n")
+                sys.stderr.write("Today is not an Advent of Code date; pass YYYY/DD as arguments.\n")
                 sys.exit(1)
             args = [f"{today.year:04}/{today.day:02}"]
             
         dir = os.path.dirname(os.path.realpath(__file__))
 
         path = sys.path
+        success = True
         for params.year_day in args:
-            print("testing" if params.testing else "running", params.year_day)
+            src = f"{dir}/{params.year_day}/go.py"
+            if not os.path.exists(src):
+                sys.stderr.write(f"No solution file {src!r}.\n")
+                success = False
+                continue
+
             if params.testing:
                 files = sorted(glob.glob(f"test/{params.year_day}*.txt"))
+                if not files:
+                    print("No test files for", params.year_day)
+                    return
             else:
                 files = glob.glob(f"input/{params.year_day}.txt")
-            src = f"{dir}/{params.year_day}/go.py"
+            verb = "Testing" if params.testing else "Running" 
+            print(f"{verb} {params.year_day}:")
 
             sys.path = [f"{dir}/{params.year_day}",
                         f"{dir}/{params.year_day[:4]}"] + path
@@ -69,10 +79,15 @@ class AoC:
             myglobals['AoC'] = params
             exec(code, myglobals)
             # `exec` will bind `myglobals['go']`
-            
+            if 'go' not in myglobals:
+                sys.stderr.write(f"Solution file {src!r} did not define `go`.\n")
+                success = False
+                continue
             for params.file in files:
                 print(f"results from {params.file}:")
                 myglobals['go'](open(params.file,'r').read())
+        if not success:
+            sys.exit(1)
 
 if __name__ == '__main__':
     # Do all the work in a function so that we don't
