@@ -25,8 +25,8 @@ def shortest_path(start, end, weights, heuristic):
     """Find the shortest path in a weighted network from `start` to
     `end`. `weights` is a function node -> [(node, weight)].
     `heuristic` is a function node -> estimated distance to end.
-    Returns the total path length and a list of the nodes on the
-    path.  Take care of the constraints on `heuristic` (including:
+    Returns a list of the nodes on the path (including `end` but not
+    `start`).  Take care of the constraints on `heuristic` (including:
     `heuristic(end)` must be zero). A-star algorithm.
 
     """

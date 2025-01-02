@@ -126,7 +126,7 @@ class LazyInputs:
         if not self._queue:
             self._stopped = True
         if not self._stopped:
-                return self._queue.popleft()
+            return self._queue.popleft()
         raise StopIteration
 
     def append(self, value):
